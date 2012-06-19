@@ -7,7 +7,6 @@ import os
 import re
 import getopt
 import csv
-import nmapxmlparser
 from xml.etree.ElementTree import ElementTree
 from data_connect import *
 from multiprocessing import Process
@@ -212,10 +211,14 @@ def store_nmap_host(host):
         elapsed = host['elapsed']
     else:
         elapsed = ""
+    if 'fingerprint' in host:
+        fingerprint = host['fingerprint']
+    else:
+        fingerprint = ""
 
     try:
         if (addr != None):
-            host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed)
+            host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
         else:
             print "Address:", addr, "or osclass:", osclass, "is blank. "
     except PicklingError as e:
@@ -401,7 +404,13 @@ def parse_nmap_xml(nmap_xml):
         else:
             nmap_host['osmatch_name'] = ""
             nmap_host['osmatch_accuracy'] = 0
-        
+
+        osfingerprint = host.find('os/osfingerprint')
+        if osfingerprint != None:
+            nmap_host['osfingerprint'] = osfingerprint.get('fingerprint')
+        else:
+            nmap_host['osfingerprint'] = ""
+
         uptime = host.find('uptime')
         if uptime != None:
             nmap_host['uptime'] = uptime.get('seconds')
@@ -470,8 +479,7 @@ def callNmap(ip):
 
     output_files = setup_files(ip)
     #subprocess.call(["nmap", "-PN", "-v", "-oX", output_files['xml_file'], "-A", ip])
-    subprocess.call(["nmap", "-v", "-oX", output_files['xml_file'], "-A", ip])
-    #nmap_xml = nmapxmlparser.xml_fh(output_files['xml_file'])
+    subprocess.call(["nmap", "-v", "-oX", output_files['xml_file'], "-O", "-sV", ip])
     #try:
     elementtree = ElementTree()
     nmap_xml = elementtree.parse(open(output_files['xml_file']))

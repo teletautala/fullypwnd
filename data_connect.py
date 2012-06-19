@@ -25,6 +25,7 @@ class Host(SQLObject):
     lastboot = StringCol(default = None)
     finished = StringCol(default = None)
     elapsed = StringCol(default = None)
+    fingerprint = StringCol(default = None)
     osmatch_name = StringCol(length = 50, default = None)
     osmatch_accuracy = StringCol(length = 25, default = None)
     date_modified = DateTimeCol(default = datetime.datetime.now())
@@ -87,6 +88,19 @@ class Os_signature(SQLObject):
     os_version = StringCol(length = 25)
     os_release = StringCol(length = 25)
     date_modified = DateTimeCol(default = datetime.datetime.now())
+
+class Working_exploit(SQLObject):
+    exploit_id = IntCol()
+    os_vendor = StringCol(length = 100, default = None)
+    os_type = StringCol(length = 100, default = None)
+    os_family = StringCol(length = 100, default = None)
+    os_gen = StringCol(length = 100, default = None)
+    service_name = StringCol(length = 100, default = None)
+    product = StringCol(length = 50, default = None)
+    version = StringCol(length = 50, default = None)
+    attempts = IntCol(default = 0)
+    successes = IntCol(default = 0)
+
 #def test(ip, port_id, protocol, state, service_name, service_desc, reason, osclass, osmatch, lastboot):
     ## test of host methods
 
