@@ -1,0 +1,13 @@
+source: http://www.securityfocus.com/bid/145/info
+
+There is a design error in the Caldera rsync program versions 2.3.0 and previous which in some instances (dependant on rare configurations) will set users home directories to world readable. Should this occur any user on the system will be able to read & copy the contents of other users home directories.
+
+The problem happens if all of these conditions hold true:
+
+1) the source file list contains exactly one filename and that is the name of an empty directory 
+2) the source directory name is specified on the command line as "somedir/" or "somedir/." or "." not as "somedir" 
+3) the destination directory doesn't exist 
+4) you have recursion and permission transfer enabled (the -a option will do this) 
+5) the working directory of the receiving process is not the destination directory (this happens when you do remote rsync transfers)
+
+(the short summary is that you need to be transferring an empty directory into a non-existent directory)

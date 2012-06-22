@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/195/info
+
+Two separate web servers may be configured to share the same physical directory on an IIS directory. There may be instances where ASP information containing confidential information (from site A) is presented in ASP information served to a user from site B. 
+

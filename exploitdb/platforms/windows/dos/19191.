@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/227/info
+
+Windows NT 4.0 SP4 introduced a logic error in the network authentication process for "downlevel" clients. When a user changes his or her password (on an NT 4.0 SP4 server) from a Windows for Workgroups, OS/2, or Macintosh client, the LanMan hash is properly updated, however, the NT hash is reset to a null value. This vulnerability would allow a user to logon to the host or domain from a Win9x or NT machine by presenting the username and a blank password. 
+

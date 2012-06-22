@@ -1,0 +1,8 @@
+source: http://www.securityfocus.com/bid/190/info
+
+
+Microsoft Visual InterDev 6.0 client is prone to vulnerability that permits attackers to gain unauthorized access to the affected application.
+
+Reportedly, a Visual InterDev 6.0 client may be able to connect to an IIS4 Web Server and manage the website without requiring any user auhentication.
+
+This issue may be associated with security permissions applied by FrontPage tools. It is unclear exactly what is allowing this to happen or under what combination of Service Pack / hotfix this may occur.

@@ -1,0 +1,12 @@
+# Exploit Title: OneForum SQL Injection Exploit
+# Google Dork: Powered by OneScripts.de
+# Date: 19/03/2012
+# Author: Cyber-sec
+# Software Link: http://www.onescripts.de/download/go.php?id=1
+# Version: OneForum - 2.0
+# Tested on: Linux
+
+[1] SQL Injection :
+
+http://localhost/OneForum/category.php?id=[sql injection]
+

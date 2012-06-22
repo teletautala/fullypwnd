@@ -1,0 +1,5 @@
+source: http://www.securityfocus.com/bid/216/info
+
+A MacOS worm "Autostart" is able to install itself on NT Server based Mac Volumes. The worm is not identified by Intel-based antivirus packages. The worm is identified by a file "deldb" on the Mac Volume root.
+
+

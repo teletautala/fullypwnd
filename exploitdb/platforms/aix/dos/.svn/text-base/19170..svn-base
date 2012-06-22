@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/222/info
+
+The POP Service of SLMail operates on tcp port 27. Issuing a 'helo' command followed by 855 to 2041 characters will cause the SLMail server to crash. An arbitrary command may be issued as a overflow exploit, although this is not discussed by the author of the post.
+

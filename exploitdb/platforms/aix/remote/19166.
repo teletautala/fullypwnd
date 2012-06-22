@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/217/info
+
+The WS_FTP Server is vulnerable to a Denial of Service attack. Issuing a CWD command (as a logged in user) with more than 876 characters will stop the Server from responding to FTP requests. 
+

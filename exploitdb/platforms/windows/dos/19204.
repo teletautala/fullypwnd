@@ -1,0 +1,12 @@
+source: http://www.securityfocus.com/bid/245/info
+
+Lax permission in Windows NT's ProfileList registry key allows malicious users to install trojan profiles for other users, including administrator, which may lead to a system compromise.
+
+When a new user logs onto a Windows NT workstation or server a new subkey is written to the registry key "HKLM\Software\Microsoft\Windows NT\CurrentVersion\ProfileList". The name of this key is the user's Security Identifier (SID). One of the values of the new key is "ProfileImagePath" which points to the location of the user's profile directory.
+
+The default permission on the ProfileList registry key grants the Everybody group the SetValue permission. This means any user can edit the information in this key or any of its subkeys. This allows a malicious user to modify another user's ProfileImagePath making them load a trojan profile which contains entries in the Start Up folder that will execute the next time the user logos to the machine.
+
+Registry editing can be acomplished locally or across a network. Although access to the registry via the network can be controlled by the applying ACL permissions over the winreg key, by default, the path "HKLM\Software\Microsoft\Windows NT\CurrentVersion" is an AllowedPath. This allows a remote user to edit any subkey of that path regardless of the permission on the winreg key.
+
+Tools such as Regedit.exe and Regedt32.exe may have problems editing AllowedPath keys whether or not they are allowed to. 
+

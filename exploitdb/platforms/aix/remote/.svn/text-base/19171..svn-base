@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/223/info
+
+The POP service of SLMail runs on tcp port 27. Issuing a 'vrfy' or 'expn' command followed by 2041 characters will cause the SLMail service to stop functioning. It is not known what other character lengths will cause this service to crash.
+

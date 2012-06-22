@@ -1,0 +1,17 @@
+# Exploit Title: Gom Player : Wav Fact Chunk Size DOS.
+# Date: 2nd November 2010
+# Author: Fady Mohammed Osman.
+# Software Link: http://www.gomlab.com/eng/GMP_download.html
+# Version: 2.1.27.50.31
+# Tested on: Win XP sp3
+
+#Information : When an invalid size is supplied for the Fact chunk size the
+program fails to initialize memory then it uses a value from this
+uninitialized memory as a pointer to data. That's explains why the pointers
+are filled with (BAADFOOD).
+
+You can reproduce the bug by altering a valid wav file and change the fact
+chunk size. you can use hex workshop for that since it's already has a wav
+structure library, then click play and the application will crash.
+
+POC: http://www.exploit-db.com/sploits/fact_size.wav.tar.gz

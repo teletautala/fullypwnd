@@ -1,0 +1,10 @@
+source: http://www.securityfocus.com/bid/198/info
+
+Users may paste information to the Windows clipboard in a variety of ways: CTL-C, edit cut, edit copy, etc. This information remains in the clipboard until it is maually cleared or the machine is shutdown.
+
+When a user secures his or her desktop by pressing ctl-alt-del then enter, or when a password protected screensaver becomes active, the user assumes their host and their data to be secure from access at the local console.
+
+Data stored in the clipboard can still be accessed even thought the console is locked. Pressing ctl-alt-del will invoke the logon window. Instead of typing the users name, the clipboard data can be displayed by pressing ctl-v while the cursor is in the username or password window.
+
+Jason Adam Young <jason_young@NCSU.EDU> posted to NTBugtraq and expressed concern that Microsoft may not have fixed the problem by simply releasing an update GINA. Instead, he feels that the problem lies within the Clipboard and its interaction with the WindowStation system object. 
+

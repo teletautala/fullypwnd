@@ -1,0 +1,5 @@
+source: http://www.securityfocus.com/bid/146/info
+
+The exploitation of the GNU gcc 2.7.2 symlink vulnerability appeared when it was realized gcc followed symbolic links during the accessing of temporary files in /tmp. The symlinks that are followed by gcc when the vulnerability is exploited are created by the attacker with predicted filenames. The consequence of the vulnerability being exploited is the ability for the attacker to "destroy" any file he has access to. The file is destroyed in the sense that, when the symlink is followed, the 'temporary file' (which points to the target file), is written to by gcc. There is a possibility the attacker may be able to write arbritrary data to some files and gain local root access.
+
+To exploit this vulnerability, the attacker would have to create symlinks with names of predicted gcc temporary files. The symlinks would have to point to the target file(s) which would be overwritten. In all likelyhood, gcc would have to be run several times before one of the created symlinks is followed.
