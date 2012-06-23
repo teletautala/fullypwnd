@@ -1,0 +1,8 @@
+source: http://www.securityfocus.com/bid/193/info
+
+An IIS4 sample site "ExAir" has three ASP pages, that if called directly without having the sample site dlls running, will cause the server CPU to increase to 100%. These pages include:
+
+Exair - root/search/advsearch.asp
+Exair - root/search/query.asp
+Exair -root/search/search.asp
+

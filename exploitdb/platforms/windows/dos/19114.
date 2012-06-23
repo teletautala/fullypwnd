@@ -1,0 +1,5 @@
+source: http://www.securityfocus.com/bid/144/info
+
+L0phtCrack 2.50 stores copies of the password hashes dumped from a Registry or SAM file in the %systemroot%\temp directory. In addition, cracked passwords are stored in the same location upon execution of the auto-save function. Passwords and/or their hashes may exist in files such as 'passwd??' or 'passwed??.lc'.
+
+The %systemroot%\temp directory default ACL permissions may allow unauthorized users to view these password hashes or clear-text passwords.

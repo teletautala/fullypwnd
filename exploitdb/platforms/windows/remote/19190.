@@ -1,0 +1,7 @@
+source: http://www.securityfocus.com/bid/225/info
+
+
+Windows 9x boxes can load multiple IP stacks to one NI card and IP address. When "pinged" from a Wintel host, these machines respond as normal. When "pinged" from a Linux client (ping or fping), these hosts will issue one ACK for each stack loaded on the NIC. (ie: if five stacks are loaded, one ACK and four duplicate ACKs will be sent). The multiple ACKs create collisions on the subnet which may affect network functionality of other hosts on the subnet.
+
+With one offending host on the subnet, this TCP chorus may impact proper functioning of Samba hosts on the wire. With four TCP chorusers, an entire subnet may be rendered useless.
+

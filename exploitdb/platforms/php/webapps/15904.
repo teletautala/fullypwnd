@@ -1,0 +1,39 @@
+=======================================================================
+# ALITALK v 1.9.1.1 Cross Site Scripting Vulnerability
+=======================================================================
+
+# Name: ALITALK v 1.9.1.1 Cross Site Scripting Vulnerability
+
+# Vendor: http://www.alilg.com/software/free-php-ajax-chat/
+
+# Date: 2011-01-04
+
+# Author: Ashiyane Digital Security Team
+
+# Contact: Xrogue_p3rsi4n_hack3r[at]Hotmail[Dot]com
+
+# Home: www.Ashiyane.org/forums/ 
+
+# Gr33tz: Behrooz_Ice,Virangar,Ruiner_blackhat,unique2world,Hijacker,Dr.mute ... !
+
+==========================================================================
+ 
+[+] Dork: intext:"POWERED BY ALITALK"
+ 
+==========================================================================
+ 
+$ Note : Permission "Create Room By User" Must Be Enabled !
+
+# At First,Register in site... :)
+
+# This Vulnerability Work in Priv8 msg , Room, And Making Room Fields!! Test it :P
+
+# You Can Steal Admin Cookie , LEt's Put Your Script in "Create New Room" Field And Press Create Room !!
+
+# MSG: The [Name] Room Created... ! 
+
+# When Admin Loged in To administrator Panel [ Alitalk/admin ] , After Pressing "Manage Rooms" Ur Script'll run ..
+
+# You can See This Tutorial ... ~> http://www.4shared.com/file/KcvqCada/xss.html
+
+==========================================================================

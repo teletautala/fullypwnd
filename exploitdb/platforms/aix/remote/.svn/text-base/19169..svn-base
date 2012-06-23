@@ -1,0 +1,4 @@
+source: http://www.securityfocus.com/bid/221/info
+
+The POP service of SLMail (ESMTP) operates on tcp port 27. Issuing the 'helo' command followed by 819 to 849 characters can cause the server CPU to rise and stay at 90% utilization. 
+

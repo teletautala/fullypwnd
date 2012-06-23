@@ -1,0 +1,10 @@
+source: http://www.securityfocus.com/bid/212/info
+
+A number of vulnerabilities exist in switches produced by N-Base Communications. These vulnerabilities allow any user who can access the switch via the console port or the network to modify and alter the configuration of these switches, as well as upload arbitrary code images to these switches.
+
+N-Base switches all contain a "backdoor" password, in order to allow users who forget their password to access the switch. This backdoor in effect eliminates all security on these switches. By entering any legitimate user name, with the password of "forgot" or "debug", the user will have the full privelege of the account being used. The debug account further allows for the modification of machine registers, which can be used to easily deny any traffic from passing through the switch.
+
+In addition, these switches have a TFTP server built in to them that allow arbitrary hosts to upload images to them. Any attacker who accesses the switch can enable this tftp server, and use it to overwrite the running image. This could easily cause the switch to cease functioning. 
+
+Any legitimate account can be accessed by using a password of 'debug' or 'forgot'. The default accounts on these switches are 'super' and 'user'
+

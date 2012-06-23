@@ -1,0 +1,6 @@
+source: http://www.securityfocus.com/bid/192/info
+
+There is a Denial of Service / Buffer Overflow condition in Microsoft IIS4 FTP service when using the NLST command. A user having user or anonymous access to the FTP server may initiate this attack. 
+
+Connecting to the FTP server and issuing an ls command with 316 characters will cause the inetinfo.exe service to crash (and the connection to be reset). Passing more than 316 characters will cause the stack to be overwritten. Up to 505 characters may be passed.
+

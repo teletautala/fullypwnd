@@ -1,0 +1,10 @@
+source: http://www.securityfocus.com/bid/196/info
+
+Similar to the Russian New Year's exploit, this vulnerability demonstrates the ability for malicious code to be executed on a web user's machine via the use of VBA code that may be executed upon opening or viewing a file.
+
+Office97 applications may be configured to prompt the user before launching the VBA code. Unfortunately, the templates upon which Word documents are based DO NOT prompt the user upon opening VBA code.
+
+Outlook documents in HTML code may be trojaned in a similar fashion.
+
+IE4 and IE5 may also trigger the same VBA trojan if they are configured to automatically display Office documents form within the browser window. 
+
