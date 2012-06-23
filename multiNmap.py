@@ -7,6 +7,7 @@ import os
 import re
 import getopt
 import csv
+from debug import Debug
 from xml.etree.ElementTree import ElementTree
 from data_connect import *
 from multiprocessing import Process
@@ -41,14 +42,14 @@ You must be root!
 base_files = {'xml_file': "results-nmap-A.xml",
             'results_file': "results.csv",
             'host_file': "host_info.csv"}
-
-debug = 0
+debug = Debug()
+debug.level = 0
 
 # Acceptable commandline arguments
 #
 
 options = ('c:d')
-longOptions = ['debug=', 'no-cache', 'no-scan']
+longOptions = ['debug-level=', 'no-cache', 'no-scan']
 # if there isn't an argument fail gracefully
 if len(sys.argv) < 2:
     print usageMessage
@@ -150,7 +151,9 @@ def find_osmatch(host_info):
     return osmatch
 
 def store_nmap_host(host):
-    #print host
+    if debug.level > 0:
+	debug.debugmsg(host)
+	#print host
     if 'addr' in host:
         addr = host['addr']
     else:
@@ -218,7 +221,8 @@ def store_nmap_host(host):
 
     try:
         if (addr != None):
-            host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
+            print host
+            #host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
         else:
             print "Address:", addr, "or osclass:", osclass, "is blank. "
     except PicklingError as e:
@@ -504,7 +508,7 @@ def remove_cache(ipList):
     print "[*] Removing files for previously scanned IPs."
 
     for ip in ipList:
-        if len(list(Host.select(Host.q.ip == ip))) > 0:
+        if len(list(Host.select(Host.q.ip == ip))) != 0:
             host_services = list(Host_service.select(Host_service.q.ip == ip))
             if len(host_services) > 0:
                 for host_service in host_services:
@@ -516,10 +520,13 @@ def run_once_ip_list(ipList):
     returnValue = False
 
     for ip in ipList:
-        if len(list(Host.select(Host.q.ip == ip))) > 0:
-            print "This ip ", ip, " has already been scanned."
-            print "  If you want to perform a fresh scan use --no-cache"
-            ipList.remove(ip)
+	try:
+	    Host.select(Host.q.ip == ip).getOne()
+	    print "This ip", ip, "has already been scanned."
+	    print "  If you want to perform a fresh scan use --no-cache"
+	    iplist.remove(ip)
+	except:
+	    pass
             
     return returnValue
 
@@ -558,7 +565,9 @@ def main():
             remove_cache(ipList)
         elif flag in ('--no-scan'):
             run_scan= False
-        else:
+        elif flag in ('--debug-level'):
+            debug.level = value
+	else:
             print usageMessage
             sys.exit(1)
     

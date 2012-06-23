@@ -4,7 +4,7 @@ from sqlobject import *
 import sys, os
 import datetime
 
-conn_str = 'postgres://postgres:I\ am\ a\ child\ of\ God@localhost/postgres'
+conn_str = 'postgres://postgres2:AdministratorforFAbacktrack@localhost/postgres'
 conn = connectionForURI(conn_str)
 sqlhub.processConnection = conn
 
