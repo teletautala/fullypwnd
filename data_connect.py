@@ -2,14 +2,14 @@
 
 from sqlobject import *
 import sys, os
+import debug
 import datetime
 
 conn_str = 'postgres://postgres2:AdministratorforFAbacktrack@localhost/postgres'
 conn = connectionForURI(conn_str)
 sqlhub.processConnection = conn
 
-
-debug = 0
+debug.level = 0
 
 class Host(SQLObject):
     ip = StringCol(length = 15)
@@ -35,23 +35,6 @@ class Service(SQLObject):
     service = StringCol(length = 15)
     default_port = IntCol()
     date_modified = DateTimeCol(default = datetime.datetime.now())
-
-    def add_service(service, default_port):
-        if debug > 0:
-            Service._connection.debug = True
-        service = Service(service = service, default_port = default_port, date_modified = datetime.datetime.now())
-        return service
-
-    def select_service(service):
-        if debug > 0:
-            Service._connection.debug = True
-        service = Service.select(Service.q.service == service)
-        return service
-
-    def delete_service(service_name):
-        if debug > 0:
-            Service._connection.debug = True
-        Service.delete(Service.select(Service.q.service == service_name).getOne().id)
 
 ## Host Service class
 class Host_service(SQLObject):
