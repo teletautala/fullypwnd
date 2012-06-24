@@ -84,6 +84,12 @@ class Working_exploit(SQLObject):
     attempts = IntCol(default = 0)
     successes = IntCol(default = 0)
 
+class Exploits(SQLObject):
+    exploit_sha1 = StringCol(length = 41)
+    exploit_source = StringCol(length = 100)
+    exploit_path = StringCol(length = 100)
+
+
 #def test(ip, port_id, protocol, state, service_name, service_desc, reason, osclass, osmatch, lastboot):
     ## test of host methods
 
