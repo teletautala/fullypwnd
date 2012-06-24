@@ -7,6 +7,9 @@ import subprocess
 #global variables
 workingFilename = ""
 archiveDir = "./archive/"
+if not os.path.exists(archiveDir):
+    os.mkdir(archiveDir)
+
 debugLevel = 0
 
 usage = '''
