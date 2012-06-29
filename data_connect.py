@@ -12,6 +12,9 @@ sqlhub.processConnection = conn
 debug = 0
 
 class Host(SQLObject):
+    #class sqlmeta:
+    #    cacheValues = True
+
     ip = StringCol(length = 15)
     state = StringCol(length = 25, default = None)
     reason = StringCol(length = 25, default = None)
@@ -36,25 +39,11 @@ class Service(SQLObject):
     default_port = IntCol()
     date_modified = DateTimeCol(default = datetime.datetime.now())
 
-    def add_service(service, default_port):
-        if debug > 0:
-            Service._connection.debug = True
-        service = Service(service = service, default_port = default_port, date_modified = datetime.datetime.now())
-        return service
-
-    def select_service(service):
-        if debug > 0:
-            Service._connection.debug = True
-        service = Service.select(Service.q.service == service)
-        return service
-
-    def delete_service(service_name):
-        if debug > 0:
-            Service._connection.debug = True
-        Service.delete(Service.select(Service.q.service == service_name).getOne().id)
-
 ## Host Service class
 class Host_service(SQLObject):
+    #class sqlmeta:
+    #    cacheValues = True
+
     ip = StringCol(length = 20)
     port_id = IntCol()
     protocol = StringCol(length = 25)
@@ -103,6 +92,7 @@ class Working_exploit(SQLObject):
 
 class Exploits(SQLObject):
     exploit_sha1 = StringCol(length = 41)
+    exploit_githash = StringCol(length = 41)
     exploit_source = StringCol(length = 100)
     exploit_path = StringCol(length = 100)
 

@@ -7,9 +7,13 @@ import os
 import re
 import getopt
 import csv
+import migrate_exploits
+from data_alchemy import *
+#import data_connect
+from sqlalchemy.orm import Session
 from debug import Debug
 from xml.etree.ElementTree import ElementTree
-from data_connect import *
+#from data_connect import *
 from multiprocessing import Process
 from multiprocessing.pool import ThreadPool
 from pickle import PicklingError
@@ -49,7 +53,8 @@ debug.level = 0
 #
 
 options = ('c:d')
-longOptions = ['debug-level=', 'no-cache', 'no-scan']
+longOptions = ['debug-level=', 'no-cache', 'no-scan', 'update-exploits']
+
 # if there isn't an argument fail gracefully
 if len(sys.argv) < 2:
     print usageMessage
@@ -60,6 +65,9 @@ if len(sys.argv) < 2:
 
 # store ip address/range
 def validateRange(subnet):
+    if debug.level > 0:
+        debug.msg(subnet)
+
     validRange = False
     ipRange = subnet.split("-")
     lowRange = 0
@@ -73,12 +81,18 @@ def validateRange(subnet):
     return validRange
 
 def validateIP(ip):
+    if debug.level > 0:
+        debug.msg(ip)
+
     ipFound = False
     if (validateRange(ip[0]) or int(ip[0]) < 255) and (validateRange(ip[1]) or int(ip[1]) < 255) and (validateRange(ip[2]) or int(ip[2]) < 255) and (validateRange(ip[3]) or int(ip[3]) < 255):
         ipFound = True
     return ipFound
 
 def enumerateIPs(ip):
+    if debug.level > 0:
+        debug.msg(ip)
+
     classARange = []
     classBRange = []
     classCRange = []
@@ -127,6 +141,9 @@ def enumerateIPs(ip):
     return ips
 
 def setup_files(ip):
+    if debug.level > 0:
+        debug.msg(ip)
+
     xml_path = "./" + ip + "/" + base_files['xml_file']
     results_path = "./" + ip + "/" + base_files['results_file']
     host_path = "./" + ip + "/" + base_files['host_file']
@@ -137,14 +154,15 @@ def setup_files(ip):
     return created_files
 
 def find_osmatch(host_info):
+    if debug.level > 0:
+        debug.msg(host_info)
+
     service = host_info['service']
     servicedesc = host_info['servicedesc']
     osclass = host_info['osclass']
     osmatch = host_info['osmatch']
 
-    print host_info
     ubuntu = re.compile('.*ubuntu.*')
-    print servicedesc.lower()
     if ubuntu.match(servicedesc.lower()):
         osmatch = "Ubuntu"
         print "@@@:", osmatch
@@ -152,8 +170,8 @@ def find_osmatch(host_info):
 
 def store_nmap_host(host):
     if debug.level > 0:
-	debug.debugmsg(host)
-	#print host
+        debug.msg(host)
+
     if 'addr' in host:
         addr = host['addr']
     else:
@@ -219,38 +237,15 @@ def store_nmap_host(host):
     else:
         fingerprint = ""
 
-    try:
-        if (addr != None):
-            print host
-            #host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
-        else:
-            print "Address:", addr, "or osclass:", osclass, "is blank. "
-    except PicklingError as e:
-        print e
+    if (addr != None):
+        host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
+    else:
+        print "Address:", addr, "or osclass:", osclass, "is blank. "
 
 def store_nmap_host_services(services):
-    """    def store_nmap_host_script(script, service):
-        if 'id' in script:
-            script_id = script['id']
-        else:
-            script_id = ""
-        if 'output' in script:
-            script_ouput = script['output']
-        else:
-            script_output = ""
-        if 'ip_addr' in service:
-            addr = service['ip_addr']
-        else:
-            addr = ""
-        if 'portid' in service:
-            port_id = int(service['portid'])
-        else:
-            port_id = int(0)
-        if 'name' in service:
-            service_name = service['name']
-        else:
-            service_name = ""
-    """
+    if debug.level > 0:
+        debug.msg(services)
+
     if len(services) > 0:
         for service in services:
             if 'addr' in service:
@@ -326,6 +321,9 @@ def store_nmap_host_services(services):
     return
 
 def store_nmap_service_script(scripts):
+    if debug.level > 0:
+        debug.msg(scripts)
+
     if len(scripts) > 0:
         service_scripts = []
         for script in scripts:
@@ -372,6 +370,9 @@ def store_nmap_service_script(scripts):
     return
 
 def parse_nmap_xml(nmap_xml):
+    if debug.level > 0:
+        debug.msg(nmap_xml)
+
     nmap_host = {}
     host_services = []
     hostscript_tmp = {}
@@ -478,17 +479,17 @@ def parse_nmap_xml(nmap_xml):
 
 # TODO This could pass command line arguments to nmap
 def callNmap(ip):
+    if debug.level > 0:
+        debug.msg(ip)
+
     if not os.path.isdir("./" + ip):
         os.mkdir("./" + ip)
 
     output_files = setup_files(ip)
     #subprocess.call(["nmap", "-PN", "-v", "-oX", output_files['xml_file'], "-A", ip])
-    subprocess.call(["nmap", "-v", "-oX", output_files['xml_file'], "-O", "-sV", ip])
-    #try:
+    subprocess.call(["nmap", "-p22", "-oX", output_files['xml_file'], "-sV", ip])
     elementtree = ElementTree()
     nmap_xml = elementtree.parse(open(output_files['xml_file']))
-    #except e:
-    #    print e
     nmap_host, host_services, port_script = parse_nmap_xml(nmap_xml)
     
      
@@ -497,6 +498,9 @@ def callNmap(ip):
     store_nmap_service_script(port_script)
 
 def find_exploits(service_line):
+    if debug.level > 0:
+        debug.msg(service_line)
+
     found_exploits = []
     if osmatch != "":
         print service_line['service'], "with", service_line['servicedesc'], "is running on", service_line['osclass'], service_line['osmatch']
@@ -504,19 +508,32 @@ def find_exploits(service_line):
         find_osmatch()
     return found_exploits
 
-def remove_cache(ipList):
-    print "[*] Removing files for previously scanned IPs."
+def update_exploits():
+    if debug.level > 0:
+        debug.msg()
+    migrate_exploits.main()
 
+def remove_cache(ipList):
+    if debug.level > 0:
+        debug.msg(ipList)
+
+    print "[*] Removing files for previously scanned IPs."
+    
     for ip in ipList:
-        if len(list(Host.select(Host.q.ip == ip))) != 0:
-            host_services = list(Host_service.select(Host_service.q.ip == ip))
-            if len(host_services) > 0:
-                for host_service in host_services:
-                    host_service.destroySelf()
-                    
-            Host.select(Host.q.ip == ip).getOne().destroySelf()
+        host = session.query(Host).filter(Host.ip == ip).delete()
+        #if len(host) != 0:
+        #    Session.delete(host[0])
+            #host_services = Session(bind = engine).query(Host_service).filter(Host_service.ip == ip).all()
+            #if len(host_services) > 0:
+            #    for host_service in host_services:
+            #        host_service.delete()
+            #        
+            #Host.select(Host.q.ip == ip).getOne().destroySelf()
 
 def run_once_ip_list(ipList):
+    if debug.level > 0:
+        debug.msg(ipList)
+
     returnValue = False
 
     for ip in ipList:
@@ -531,6 +548,9 @@ def run_once_ip_list(ipList):
     return returnValue
 
 def get_osmatch(host_file):
+    if debug.level > 0:
+        debug.msg(host_file)
+
     os_match = None
     csv_reader = csv.DictReader(open(host_file, "r"))
     for line in csv_reader:
@@ -542,6 +562,9 @@ def get_osmatch(host_file):
     return os_match
 
 def main():	
+    if debug.level > 0:
+        debug.msg()
+
     processCount = multiprocessing.cpu_count()
     flags, other = getopt.getopt(sys.argv[1:], options, longOptions)
     run_scan = True
@@ -591,16 +614,25 @@ def main():
                 sys.exit(1)
     
     if run_exploits:
+                    #database_type://username:password@host/database_name
+        #conn_str = 'postgres://postgres2:AdministratorforFAbacktrack@localhost/postgres'
+        #conn2 = connectionForURI(conn_str)
+        #sqlhub.processConnection = conn2
+
         for ip in ipList:
-            data_files = setup_files(ip)
             osmatch = False
-            if os.path.isfile(data_files['host_file']):
-                osmatch = get_osmatch(data_files['host_file'])
-                if osmatch and os.path.isfile(data_files['results_file']):
-                    csv_reader = csv.DictReader(open(data_files['results_file'], "r"))
-                    for line in csv_reader:
-                        #exploits = find_exploits(line)
-                        exploits = ""#find_exploits(line)
+
+            host_services = list(Host_service.select(Host_service.q.ip == ip))
+            '''if len(host_services) > 0:
+                if debug.level > 0:
+                    debug.msg(host_services)
+            
+                for host_service in host_services:
+                    exploits = find_exploits(line)
+                    if debug.level > 0:
+                        debug.msg(exploits)
+                    #exploits = ""#find_exploits(line)
+                '''
 
 if __name__ == "__main__":
     if os.getuid() == 0:
