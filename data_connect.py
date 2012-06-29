@@ -12,6 +12,9 @@ sqlhub.processConnection = conn
 debug.level = 0
 
 class Host(SQLObject):
+    #class sqlmeta:
+    #    cacheValues = True
+
     ip = StringCol(length = 15)
     state = StringCol(length = 25, default = None)
     reason = StringCol(length = 25, default = None)
@@ -38,6 +41,9 @@ class Service(SQLObject):
 
 ## Host Service class
 class Host_service(SQLObject):
+    #class sqlmeta:
+    #    cacheValues = True
+
     ip = StringCol(length = 20)
     port_id = IntCol()
     protocol = StringCol(length = 25)
@@ -86,6 +92,7 @@ class Working_exploit(SQLObject):
 
 class Exploits(SQLObject):
     exploit_sha1 = StringCol(length = 41)
+    exploit_githash = StringCol(length = 41)
     exploit_source = StringCol(length = 100)
     exploit_path = StringCol(length = 100)
 
