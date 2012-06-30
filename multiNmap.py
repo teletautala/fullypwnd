@@ -10,7 +10,9 @@ import csv
 import migrate_exploits
 from data_alchemy import *
 #import data_connect
+from sqlalchemy import *
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import ProgrammingError
 from debug import Debug
 from xml.etree.ElementTree import ElementTree
 #from data_connect import *
@@ -238,13 +240,23 @@ def store_nmap_host(host):
         fingerprint = ""
 
     if (addr != None):
-        host = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
+        try:
+            host_record = Host(ip = addr, state = state, reason = reason, hostname = hostname, os_type = os_type, os_vendor = os_vendor, os_family = os_family, os_gen = os_gen, osclass_accuracy = osclass_accuracy, osmatch_name = osmatch_name, osmatch_accuracy = osmatch_accuracy, uptime = uptime, lastboot = lastboot, finished = finished, elapsed = elapsed, fingerprint = fingerprint)
+            session.add(host_record)
+            session.commit()
+        except:
+            debug.msg(host_record)
     else:
         print "Address:", addr, "or osclass:", osclass, "is blank. "
 
-def store_nmap_host_services(services):
+    return host_record
+
+def store_nmap_host_services(services, host_record):
     if debug.level > 0:
         debug.msg(services)
+        debug.msg(host_record)
+    
+    host_service = []
 
     if len(services) > 0:
         for service in services:
@@ -306,23 +318,23 @@ def store_nmap_host_services(services):
                 reason_ttl = int(reason_ttl)
                 conf = int(conf)
                 try:
-                    if len(list(Host_service.selectBy(ip = addr, port_id = port_id))) > 0:
-                        Host_service.selectBy(ip = addr, port_id = port_id).getOne().destroySelf()
-                    
-                    if debug > 0:
-                        Host_service._connection.debug = True
-
+                    session.query(Host_service).filter(Host_service.ip == addr).filter(Host_service.port_id == port_id).delete()
                     host_service = Host_service(ip = addr, port_id = port_id, protocol = protocol, state = state, reason = reason, reason_ttl = reason_ttl, service_name = service_name, product = product, version = version, extrainfo = extrainfo, ostype = ostype, method = method, conf = conf)
-                except:
-                    print "[*] Error adding host service. "
+                    host_record.host_service.append(host_service)
+                    session.add(host_record)
+                    session.commit()
+                except Exception as e:
+                    debug.msg(e)
+                    debug.msg("[*] Error adding host service. ")
             else:
-                print "port and/or addr missing."
+                debug.msg("port and/or addr missing.")
             
-    return
+    return host_service
 
-def store_nmap_service_script(scripts):
+def store_nmap_service_script(scripts, host_service_record):
     if debug.level > 0:
         debug.msg(scripts)
+        debug.msg(host_service_record)
 
     if len(scripts) > 0:
         service_scripts = []
@@ -354,14 +366,14 @@ def store_nmap_service_script(scripts):
             
             if addr != None and port_id != None and protocol != None and script_id != None and script_output != None:
                 try:
-                    if len(list(Service_script.selectBy(ip = addr, port_id = port_id, protocol = protocol, service_name = service_name, script_id = script_id, script_output = script_output))) > 0:
-                        Service_script.selectBy(ip = addr, port_id = port_id, protocol = protocol, service_name = service_name, script_id = script_id, script_output = script_output).getOne().destroySelf()
-
-                    if debug > 0:
-                        Servive_script._connection.debug = True
+                    session.query(Service_script).filter(and_(Service_script.ip == addr, Service_script.port_id == port_id)).delete()
 
                     service_script = Service_script(ip = addr, port_id = port_id, protocol = protocol, service_name = service_name, script_id = script_id, script_output = script_output)
-                except PicklingError as e:
+                    host_service_record.service_script.append(service_script)
+                    session.add(host_service_record)
+                    session.commit()
+
+                except Exception as e:
                     print "[*] Error adding service script. "
                     print e
             else:
@@ -487,25 +499,28 @@ def callNmap(ip):
 
     output_files = setup_files(ip)
     #subprocess.call(["nmap", "-PN", "-v", "-oX", output_files['xml_file'], "-A", ip])
-    subprocess.call(["nmap", "-p22", "-oX", output_files['xml_file'], "-sV", ip])
+    #subprocess.call(["nmap", "-p22", "-oX", output_files['xml_file'], "-sV", ip])
+    subprocess.call(["nmap", "-v", "-oX", output_files['xml_file'], "-A", ip])
     elementtree = ElementTree()
     nmap_xml = elementtree.parse(open(output_files['xml_file']))
     nmap_host, host_services, port_script = parse_nmap_xml(nmap_xml)
     
      
-    store_nmap_host(nmap_host)
-    store_nmap_host_services(host_services)
-    store_nmap_service_script(port_script)
+    host_record = store_nmap_host(nmap_host)
+    host_service_record = store_nmap_host_services(host_services, host_record)
+    store_nmap_service_script(port_script, host_service_record)
 
-def find_exploits(service_line):
+def find_exploits(host_service):
     if debug.level > 0:
-        debug.msg(service_line)
+        debug.msg(host_service)
 
     found_exploits = []
-    if osmatch != "":
-        print service_line['service'], "with", service_line['servicedesc'], "is running on", service_line['osclass'], service_line['osmatch']
-    else:
-        find_osmatch()
+    ip = host_service.ip
+    port_id = host_service.port_id
+    #if osmatch != "":
+    #    print service_line['service'], "with", service_line['servicedesc'], "is running on", service_line['osclass'], service_line['osmatch']
+    #else:
+    #    find_osmatch()
     return found_exploits
 
 def update_exploits():
@@ -521,14 +536,6 @@ def remove_cache(ipList):
     
     for ip in ipList:
         host = session.query(Host).filter(Host.ip == ip).delete()
-        #if len(host) != 0:
-        #    Session.delete(host[0])
-            #host_services = Session(bind = engine).query(Host_service).filter(Host_service.ip == ip).all()
-            #if len(host_services) > 0:
-            #    for host_service in host_services:
-            #        host_service.delete()
-            #        
-            #Host.select(Host.q.ip == ip).getOne().destroySelf()
 
 def run_once_ip_list(ipList):
     if debug.level > 0:
@@ -614,25 +621,22 @@ def main():
                 sys.exit(1)
     
     if run_exploits:
-                    #database_type://username:password@host/database_name
-        #conn_str = 'postgres://postgres2:AdministratorforFAbacktrack@localhost/postgres'
-        #conn2 = connectionForURI(conn_str)
-        #sqlhub.processConnection = conn2
+        session_exploits = Session(bind = engine)
+        try:
+            host_services = session_exploits.query(Host_service).filter(Host_service.ip.in_(ipList)).all()
+            exploit_results = pool.map_async(find_exploits, host_services).get(99999999999)
+            found_exploits = []
+            for exploit_result in exploit_results:
+                if len(exploit_result) > 0:
+                    found_exploits.append(exploit_result)
 
-        for ip in ipList:
-            osmatch = False
+            if len(found_exploits) > 0:
+                print "[*] Exploits found!"
+            else:
+                print "Sorry, no exploits found.  :("
 
-            host_services = list(Host_service.select(Host_service.q.ip == ip))
-            '''if len(host_services) > 0:
-                if debug.level > 0:
-                    debug.msg(host_services)
-            
-                for host_service in host_services:
-                    exploits = find_exploits(line)
-                    if debug.level > 0:
-                        debug.msg(exploits)
-                    #exploits = ""#find_exploits(line)
-                '''
+        except ProgrammingError as e:
+            debug.msg(e)
 
 if __name__ == "__main__":
     if os.getuid() == 0:
