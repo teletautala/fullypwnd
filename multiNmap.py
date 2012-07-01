@@ -513,14 +513,13 @@ def callNmap(ip):
 def find_exploits(host_service):
     if debug.level > 0:
         debug.msg(host_service)
-
+    
     found_exploits = []
-    ip = host_service.ip
-    port_id = host_service.port_id
-    #if osmatch != "":
-    #    print service_line['service'], "with", service_line['servicedesc'], "is running on", service_line['osclass'], service_line['osmatch']
-    #else:
-    #    find_osmatch()
+    print "\n\n\n\n" + host_service
+    #if len(host_service) > 0:
+    #    print "in"
+        #ip = host_service.ip
+        #port_id = host_service.port_id
     return found_exploits
 
 def update_exploits():
@@ -544,13 +543,14 @@ def run_once_ip_list(ipList):
     returnValue = False
 
     for ip in ipList:
-	try:
-	    Host.select(Host.q.ip == ip).getOne()
-	    print "This ip", ip, "has already been scanned."
-	    print "  If you want to perform a fresh scan use --no-cache"
-	    iplist.remove(ip)
-	except:
-	    pass
+        try:
+            host = session.query(Host).filter(Host.ip == ip).all()
+            if len(host) > 0:
+                print "This ip", ip, "has already been scanned."
+                print "  If you want to perform a fresh scan use --no-cache"
+                ipList.remove(ip)
+        except Exception as e:
+            debug.msg(e)
             
     return returnValue
 
@@ -623,17 +623,20 @@ def main():
     if run_exploits:
         session_exploits = Session(bind = engine)
         try:
-            host_services = session_exploits.query(Host_service).filter(Host_service.ip.in_(ipList)).all()
-            exploit_results = pool.map_async(find_exploits, host_services).get(99999999999)
-            found_exploits = []
-            for exploit_result in exploit_results:
-                if len(exploit_result) > 0:
-                    found_exploits.append(exploit_result)
+            if len(ipList) > 0:
+                host_services = session_exploits.query(Host_service).filter(Host_service.ip.in_(ipList)).all()
+                host_services = []
+                if len(host_services) > 0:
+                    exploit_results = pool.map_async(find_exploits, host_services).get(99999999999)
+                    found_exploits = []
+                    for exploit_result in exploit_results:
+                        if len(exploit_result) > 0:
+                            found_exploits.append(exploit_result)
 
-            if len(found_exploits) > 0:
-                print "[*] Exploits found!"
-            else:
-                print "Sorry, no exploits found.  :("
+                    if len(found_exploits) > 0:
+                        print "[*] Exploits found!"
+                    else:
+                        print "Sorry, no exploits found.  :("
 
         except ProgrammingError as e:
             debug.msg(e)
