@@ -41,7 +41,7 @@ class Host(Base):
     date_modified = deferred(Column(DateTime, default = datetime.datetime.now()))
 
     #host_service = relationship("Host_service", backref = "Host")
-    host_service = relationship("Host_service", cascade = "all, delete, delete-orphan")
+    host_service = relationship("Host_service", cascade = "all, delete, delete-orphan", backref = "Host")
     #service_script = relationship("Service_script", backref = "Host")
     service_script = relationship("Service_script", cascade = "all, delete, delete-orphan")
 
@@ -65,14 +65,11 @@ class Host_service(Base):
     conf = deferred(Column(Integer, default = None))
     date_modified = deferred(Column(DateTime, default = datetime.datetime.now()))
   
-    service_script_port = relationship("Service_script", 
-            primaryjoin = "and_(Host_service.port_id == Service_script.port_id)",
-            cascade = "all, delete, delete-orphan")
-#            backref = "Host_service")
-    service_script_service = relationship("Service_script",
-            primaryjoin = "and_(Host_service.service_name == Service_script.service_name)",
-            cascade = "all, delete, delete-orphan")
-#            backref = "Host_service")
+    service_script = relationship("Service_script", 
+            primaryjoin = "and_(Host_service.port_id == Service_script.port_id, \
+                Host_service.service_name == Service_script.service_name)",
+            cascade = "all, delete, delete-orphan",
+            backref = "Host_service")
     working_exploit = relationship("Working_exploit")
 
 ## Service script
