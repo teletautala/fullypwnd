@@ -513,7 +513,7 @@ def callNmap(ip):
 def find_exploits(host_service):
     if debug.level > 0:
         debug.msg(host_service)
-    
+     
     found_exploits = []
     print "\n\n\n\n" + host_service
     #if len(host_service) > 0:
@@ -577,16 +577,6 @@ def main():
     run_scan = True
     run_exploits = True
 
-    # TODO This could use an elif checking for valid domain name as well
-    if len(other[0].split(".")) == 4:
-        ip = other[0].split(".")	
-        if validateIP(ip): 
-            ipList = enumerateIPs(ip)
-        else:
-            print validIPMessage
-    else:
-        print validIPMessage
-
     for flag, value in flags:
         if flag in ('-c'):
             if int(value) < processCount * 1000:
@@ -594,13 +584,29 @@ def main():
         elif flag in ('--no-cache'):
             remove_cache(ipList)
         elif flag in ('--no-scan'):
-            run_scan= False
+            run_scan = False
         elif flag in ('--debug-level'):
             debug.level = value
+        elif flag in ('--update-exploits'):
+            update_exploits()
+            run_scan = False
+            run_exploits = False
+            parse_ip = False
 	else:
             print usageMessage
             sys.exit(1)
     
+    if parse_ip:
+        # TODO This could use an elif checking for valid domain name as well
+        if len(other[0].split(".")) == 4:
+            ip = other[0].split(".")	
+            if validateIP(ip): 
+                ipList = enumerateIPs(ip)
+            else:
+                print validIPMessage
+        else:
+            print validIPMessage
+
     if run_scan:
         #remove_cache(ipList)
         run_once_ip_list(ipList)

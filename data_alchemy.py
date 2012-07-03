@@ -93,8 +93,11 @@ class Exploits(Base):
     exploit_githash = deferred(Column(String(41), default = None))
     exploit_source = deferred(Column(String(100)))
     exploit_path = deferred(Column(String(100)))
-                                                            
-    working_exploit = relationship("Working_exploit", cascade = "all, delete, delete-orphan")
+    os_family = deferred(Column(String(25)))
+    service_name = deferred(Column(String(25)))
+                                                                
+    working_exploit = relationship("Working_exploit", cascade = "all, delete, delete-orphan",
+            backref = "Exploits")
 
 class Working_exploit(Base):
     __tablename__ = 'working_exploit'
