@@ -9,13 +9,11 @@ import getopt
 import csv
 import migrate_exploits
 from data_alchemy import *
-#import data_connect
 from sqlalchemy import *
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import ProgrammingError
 from debug import Debug
 from xml.etree.ElementTree import ElementTree
-#from data_connect import *
 from multiprocessing import Process
 from multiprocessing.pool import ThreadPool
 from pickle import PicklingError
@@ -500,7 +498,7 @@ def callNmap(ip):
     output_files = setup_files(ip)
     #subprocess.call(["nmap", "-PN", "-v", "-oX", output_files['xml_file'], "-A", ip])
     #subprocess.call(["nmap", "-p22", "-oX", output_files['xml_file'], "-sV", ip])
-    subprocess.call(["nmap", "-v", "-oX", output_files['xml_file'], "-A", ip])
+    subprocess.call(["nmap", "-p1-65535", "-v", "-oX", output_files['xml_file'], "-A", ip])
     elementtree = ElementTree()
     nmap_xml = elementtree.parse(open(output_files['xml_file']))
     nmap_host, host_services, port_script = parse_nmap_xml(nmap_xml)
@@ -510,17 +508,19 @@ def callNmap(ip):
     host_service_record = store_nmap_host_services(host_services, host_record)
     store_nmap_service_script(port_script, host_service_record)
 
-def find_exploits(host_service):
+def find_exploits(host_service_extended):
     if debug.level > 0:
-        debug.msg(host_service)
-     
-    found_exploits = []
-    print "\n\n\n\n" + host_service
-    #if len(host_service) > 0:
-    #    print "in"
-        #ip = host_service.ip
-        #port_id = host_service.port_id
-    return found_exploits
+        debug.msg(host_service_extended)
+    
+    session = Session(bind = engine)
+    session.add(host_service_extended)
+    try:
+        service_exploits = session.query(Exploits).filter(and_(Exploits.os_family == host_service_extended.os_family, 
+                Exploits.service_name == host_service_extended.service_name)).all()
+    except Exception as e:
+        debug.msg(e)
+
+    return service_exploits
 
 def update_exploits():
     if debug.level > 0:
@@ -576,13 +576,15 @@ def main():
     flags, other = getopt.getopt(sys.argv[1:], options, longOptions)
     run_scan = True
     run_exploits = True
+    parse_ip = True
+    use_cache = True
 
     for flag, value in flags:
         if flag in ('-c'):
             if int(value) < processCount * 1000:
                 processCount = int(value)
         elif flag in ('--no-cache'):
-            remove_cache(ipList)
+            use_cache = False
         elif flag in ('--no-scan'):
             run_scan = False
         elif flag in ('--debug-level'):
@@ -606,6 +608,8 @@ def main():
                 print validIPMessage
         else:
             print validIPMessage
+        if use_cache == False:
+            remove_cache(ipList)
 
     if run_scan:
         #remove_cache(ipList)
@@ -630,19 +634,21 @@ def main():
         session_exploits = Session(bind = engine)
         try:
             if len(ipList) > 0:
-                host_services = session_exploits.query(Host_service).filter(Host_service.ip.in_(ipList)).all()
-                host_services = []
-                if len(host_services) > 0:
-                    exploit_results = pool.map_async(find_exploits, host_services).get(99999999999)
-                    found_exploits = []
-                    for exploit_result in exploit_results:
-                        if len(exploit_result) > 0:
-                            found_exploits.append(exploit_result)
+                host_services_extended = session_exploits.query(Host_service_extended).filter(Host_service_extended.ip.in_(ipList))
 
-                    if len(found_exploits) > 0:
-                        print "[*] Exploits found!"
-                    else:
-                        print "Sorry, no exploits found.  :("
+                #if len(host_services_extended) > 0:
+                pool = multiprocessing.Pool(processes=processCount)
+                exploit_results = pool.map_async(find_exploits, host_services_extended).get(99999999999)
+                
+                found_exploits = []
+                for exploit_result in exploit_results:
+                    if len(exploit_result) > 0:
+                        found_exploits.append(exploit_result)
+ 
+                if len(found_exploits) > 0:
+                    print "[*] Exploits found!"
+                else:
+                    print "Sorry, no exploits found.  :("
 
         except ProgrammingError as e:
             debug.msg(e)
