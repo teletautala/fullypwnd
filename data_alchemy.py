@@ -82,7 +82,7 @@ class Host_service(Base):
 class Host_service_extended(Base):
     __tablename__ = 'host_service_extended'
 
-    ip = Column(String(25), ForeignKey("host.ip"), primary_key = True)
+    ip = Column(String(25, convert_unicode = False), ForeignKey("host.ip"), primary_key = True)
     os_family = deferred(Column(String(100), ForeignKey("host.os_family")))
     os_vendor = deferred(Column(String(100), ForeignKey("host.os_vendor")))
     os_gen = deferred(Column(String(100), ForeignKey("host.os_gen")))
@@ -115,7 +115,7 @@ class Exploits(Base):
     exploit_githash = deferred(Column(String(41), default = None))
     exploit_source = deferred(Column(String(100)))
     exploit_path = deferred(Column(String(100)))
-    os_family = deferred(Column(String(100)))
+    os_family = Column(String(100))
     service_name = deferred(Column(String(100)))
                                                                 
     working_exploit = relationship("Working_exploit", cascade = "all, delete, delete-orphan",

@@ -514,9 +514,24 @@ def find_exploits(host_service_extended):
     
     session = Session(bind = engine)
     session.add(host_service_extended)
+    os_family = host_service_extended.os_family
+    service_name = host_service_extended.service_name
+    ip = host_service_extended.ip
+
     try:
-        service_exploits = session.query(Exploits).filter(and_(Exploits.os_family == host_service_extended.os_family, 
-                Exploits.service_name == host_service_extended.service_name)).all()
+        service_exploits = session.query(Exploits).filter(and_(Exploits.os_family.match(os_family), 
+                Exploits.service_name.match(service_name))).all()
+    
+        for service_exploit in service_exploits:
+            exploit_path = service_exploit.exploit_path.encode('ascii', 'ignore')
+            exploit_parameters = [] 
+            
+            if os.path.exists(exploit_path):
+                exploit_parameters.append(exploit_path)
+                exploit_parameters.append(ip)
+                print exploit_parameters
+                subprocess.call(exploit_parameters)
+
     except Exception as e:
         debug.msg(e)
 
@@ -634,16 +649,18 @@ def main():
         session_exploits = Session(bind = engine)
         try:
             if len(ipList) > 0:
-                host_services_extended = session_exploits.query(Host_service_extended).filter(Host_service_extended.ip.in_(ipList))
+                host_services_extended = session_exploits.query(Host_service_extended).filter(Host_service_extended.ip.in_(ipList)).all()
+                if debug.level > 0:
+                    debug.msg(host_services_extended)
 
-                #if len(host_services_extended) > 0:
-                pool = multiprocessing.Pool(processes=processCount)
-                exploit_results = pool.map_async(find_exploits, host_services_extended).get(99999999999)
-                
                 found_exploits = []
-                for exploit_result in exploit_results:
-                    if len(exploit_result) > 0:
-                        found_exploits.append(exploit_result)
+                if len(host_services_extended) > 0:
+                    pool = multiprocessing.Pool(processes=processCount)
+                    exploit_results = pool.map_async(find_exploits, host_services_extended).get(99999999999)
+                
+                    for exploit_result in exploit_results:
+                        if len(exploit_result) > 0:
+                            found_exploits.append(exploit_result)
  
                 if len(found_exploits) > 0:
                     print "[*] Exploits found!"
