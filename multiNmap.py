@@ -512,6 +512,7 @@ def find_exploits(host_service_extended):
     if debug.level > 0:
         debug.msg(host_service_extended)
     
+    service_exploits = []
     session = Session(bind = engine)
     session.add(host_service_extended)
     os_family = host_service_extended.os_family
@@ -519,17 +520,17 @@ def find_exploits(host_service_extended):
     ip = host_service_extended.ip
 
     try:
-        service_exploits = session.query(Exploits).filter(and_(Exploits.os_family.match(os_family), 
-                Exploits.service_name.match(service_name))).all()
-    
+        service_exploits = session.query(Working_exploit).filter(and_(Working_exploit.os_family.match(os_family), 
+                Working_exploit.service_name.match(service_name))).all()
         for service_exploit in service_exploits:
+            print "service exploit", service_exploit
             exploit_path = service_exploit.exploit_path.encode('ascii', 'ignore')
             exploit_parameters = [] 
             
             if os.path.exists(exploit_path):
                 exploit_parameters.append(exploit_path)
                 exploit_parameters.append(ip)
-                print exploit_parameters
+                print exploit_parameters.str()
                 subprocess.call(exploit_parameters)
 
     except Exception as e:

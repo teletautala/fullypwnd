@@ -107,26 +107,26 @@ class Service_script(Base):
     script_output = deferred(Column(String, default = None))
     date_modified = deferred(Column(DateTime, default = datetime.datetime.now()))
       
-class Exploits(Base):
-    __tablename__ = 'exploits'
+class Exploit(Base):
+    __tablename__ = 'exploit'
   
-    id = Column(Integer, primary_key = True, autoincrement = True)
-    exploit_sha1 = deferred(Column(String(41)))
+    exploit_sha1 = Column(String(41), primary_key = True)
     exploit_githash = deferred(Column(String(41), default = None))
-    exploit_source = deferred(Column(String(100)))
-    exploit_path = deferred(Column(String(100)))
-    os_family = Column(String(100))
-    service_name = deferred(Column(String(100)))
+    source_file = deferred(Column(String(100)))
+    preliminary_function = deferred(Column(String(25)))
                                                                 
     working_exploit = relationship("Working_exploit", cascade = "all, delete, delete-orphan",
-            backref = "Exploits")
+            backref = "Exploit")
 
 class Working_exploit(Base):
     __tablename__ = 'working_exploit'
   
     id = Column(Integer, primary_key = True, autoincrement = True)
-    exploit_id = Column(Integer, ForeignKey("exploits.id"))
+    exploit_sha1 = Column(Integer, ForeignKey("exploit.exploit_sha1"))
     service_name = Column(String(100), ForeignKey("host_service.service_name"))
+    exploit_source = deferred(Column(String(50), default = None))
+    exploit_path = deferred(Column(String(), default = None))
+    preliminary_function = deferred(Column(String(100), default = None))
     os_vendor = deferred(Column(String(100), default = None))
     os_type = deferred(Column(String(100), default = None))
     os_family = deferred(Column(String(100), default = None))
