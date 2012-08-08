@@ -14,9 +14,6 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import ProgrammingError
 from debug import Debug
 from xml.etree.ElementTree import ElementTree
-from multiprocessing import Process
-from multiprocessing.pool import ThreadPool
-from pickle import PicklingError
 
 __author__ = 'Daniel Taualii'
 __version__ = 0.1
@@ -152,21 +149,6 @@ def setup_files(ip):
                     'host_file': host_path}
     
     return created_files
-
-def find_osmatch(host_info):
-    if debug.level > 0:
-        debug.msg(host_info)
-
-    service = host_info['service']
-    servicedesc = host_info['servicedesc']
-    osclass = host_info['osclass']
-    osmatch = host_info['osmatch']
-
-    ubuntu = re.compile('.*ubuntu.*')
-    if ubuntu.match(servicedesc.lower()):
-        osmatch = "Ubuntu"
-        print "@@@:", osmatch
-    return osmatch
 
 def store_nmap_host(host):
     if debug.level > 0:
@@ -397,7 +379,6 @@ def parse_nmap_xml(nmap_xml):
         host_address = host.find('address')
         if host_address != None:
             nmap_host['addr'] = host_address.get('addr')
-            #print nmap_host
         
         hostnames = host.find('hostnames')
         if hostnames != None:
@@ -440,7 +421,6 @@ def parse_nmap_xml(nmap_xml):
         if hostscripts != None:
             for hostscript in hostscripts:
                 hostscript_tmp['hostscript_id'] = hostscript.get('id')
-                print hostscript_tmp
 
         port_nodes = host.findall('ports/port')
         port_script = []
@@ -469,7 +449,7 @@ def parse_nmap_xml(nmap_xml):
     
                 # script information
                 script_nodes = port.findall('script')
-                #print script_nodes
+
                 for script in script_nodes:
                     script_tmp = {}
                     if script != None:
@@ -508,31 +488,53 @@ def callNmap(ip):
     host_service_record = store_nmap_host_services(host_services, host_record)
     store_nmap_service_script(port_script, host_service_record)
 
-def find_exploits(host_service_extended):
+def exploit_service(service_exploit):
+    if debug.level > 0:
+        debug.msg(service_exploit)
+
+    session = Session(bind = engine)
+    session.add(service_exploit)
+    exploit_path = service_exploit.exploit_path.encode('ascii', 'ignore')
+    exploit_parameters = [] 
+    try:
+        if os.path.exists(exploit_path):
+            filename, extension = os.path.basename(exploit_path).split(".")
+            if extension == "py":
+                exploit_parameters.append(sys.executable)
+            exploit_parameters.append(exploit_path)
+            exploit_parameters.append(ip)
+            exploit_log = str(exploit_parameters)
+            exploit_output = subprocess.Popen(exploit_parameters, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            exploit_log = exploit_log + exploit_output.communicate()[0]
+            if debug.level > 0:
+                debug.msg(exploit_log)
+            service_exploit.exploit_log = exploit_log
+
+    except Exception as e:
+        debug.msg(e)
+
+    return exploit_log
+
+
+def query_exploits(host_service_extended):
     if debug.level > 0:
         debug.msg(host_service_extended)
     
     service_exploits = []
+    exploit_parameters = []
     session = Session(bind = engine)
     session.add(host_service_extended)
     os_family = host_service_extended.os_family
     service_name = host_service_extended.service_name
     ip = host_service_extended.ip
+    port_id = host_service_extended.port_id
 
     try:
-        service_exploits = session.query(Working_exploit).filter(and_(Working_exploit.os_family.match(os_family), 
-                Working_exploit.service_name.match(service_name))).all()
-        for service_exploit in service_exploits:
-            print "service exploit", service_exploit
-            exploit_path = service_exploit.exploit_path.encode('ascii', 'ignore')
-            exploit_parameters = [] 
-            
-            if os.path.exists(exploit_path):
-                exploit_parameters.append(exploit_path)
-                exploit_parameters.append(ip)
-                print exploit_parameters.str()
-                subprocess.call(exploit_parameters)
-
+        service_exploits = session.query(Service_exploit).filter(and_(Service_exploit.os_family.match(os_family), 
+                Service_exploit.service_name.match(service_name))).all()
+        if len(service_exploits) > 0:
+            exploit_parameters = session.query(Exploit_parameter).filter(Exploit_parameter.exploit_sha1.match(service_exploits[0].exploit_sha1)).all()
+            print exploit_parameters
     except Exception as e:
         debug.msg(e)
 
@@ -591,7 +593,7 @@ def main():
     processCount = multiprocessing.cpu_count()
     flags, other = getopt.getopt(sys.argv[1:], options, longOptions)
     run_scan = True
-    run_exploits = True
+    find_exploits = True
     parse_ip = True
     use_cache = True
 
@@ -608,7 +610,7 @@ def main():
         elif flag in ('--update-exploits'):
             update_exploits()
             run_scan = False
-            run_exploits = False
+            find_exploits = False
             parse_ip = False
 	else:
             print usageMessage
@@ -646,7 +648,7 @@ def main():
                 print "Quitting!"
                 sys.exit(1)
     
-    if run_exploits:
+    if find_exploits:
         session_exploits = Session(bind = engine)
         try:
             if len(ipList) > 0:
@@ -656,15 +658,16 @@ def main():
 
                 found_exploits = []
                 if len(host_services_extended) > 0:
-                    pool = multiprocessing.Pool(processes=processCount)
-                    exploit_results = pool.map_async(find_exploits, host_services_extended).get(99999999999)
+                    pool = multiprocessing.Pool(processes = processCount)
+                    service_exploits = pool.map_async(query_exploits, host_services_extended).get(99999999999)
                 
-                    for exploit_result in exploit_results:
-                        if len(exploit_result) > 0:
-                            found_exploits.append(exploit_result)
+                    if len(service_exploits) > 0:
+                        print "[*] Exploits found:"
+                        for service_exploit in service_exploits:
+                            for service_exploit in service_exploit:
+                                session_exploits.add(service_exploit)
+                                print service_exploit.exploit_path
  
-                if len(found_exploits) > 0:
-                    print "[*] Exploits found!"
                 else:
                     print "Sorry, no exploits found.  :("
 

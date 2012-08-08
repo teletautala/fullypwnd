@@ -72,7 +72,7 @@ class Host_service(Base):
                 Host_service.service_name == Service_script.service_name)",
             cascade = "all, delete, delete-orphan",
             backref = "Host_service")
-    working_exploit = relationship("Working_exploit")
+    service_exploit = relationship("Service_exploit")
     extension = relationship("Host_service_extended",
             primaryjoin = "Host_service.port_id == Host_service_extended.port_id",
             cascade = "all, delete, delete-orphan",
@@ -115,11 +115,20 @@ class Exploit(Base):
     source_file = deferred(Column(String(100)))
     preliminary_function = deferred(Column(String(25)))
                                                                 
-    working_exploit = relationship("Working_exploit", cascade = "all, delete, delete-orphan",
+    service_exploit = relationship("Service_exploit", cascade = "all, delete, delete-orphan",
+            backref = "Exploit")
+    exploit_parameter = relationship("Exploit_parameter", cascade = "all, delete, delete-orphan",
             backref = "Exploit")
 
-class Working_exploit(Base):
-    __tablename__ = 'working_exploit'
+class Exploit_parameter(Base):
+    __tablename__ = 'exploit_parameter'
+
+    exploit_sha1 = Column(String(41), ForeignKey("exploit.exploit_sha1"), primary_key = True)
+    parameter = Column(String(15), primary_key = True)
+    function = Column(String(25), primary_key = True)
+
+class Service_exploit(Base):
+    __tablename__ = 'service_exploit'
   
     id = Column(Integer, primary_key = True, autoincrement = True)
     exploit_sha1 = Column(Integer, ForeignKey("exploit.exploit_sha1"))
@@ -135,4 +144,6 @@ class Working_exploit(Base):
     version = deferred(Column(String(50), default = None))
     attempts = deferred(Column(Integer, default = None))
     successes = deferred(Column(Integer, default = None))
+    exploit_log = deferred(Column(String(), default = None))
+    date_modified = deferred(Column(DateTime, default = datetime.datetime.now()))
 
