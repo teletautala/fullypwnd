@@ -8,6 +8,7 @@ import re
 import getopt
 import csv
 import migrate_exploits
+from OrderedSet import OrderedSet
 from data_alchemy import *
 from sqlalchemy import *
 from sqlalchemy.orm import Session
@@ -306,6 +307,7 @@ def store_nmap_host_services(services, host_record):
                 except Exception as e:
                     debug.msg(e)
                     debug.msg("[*] Error adding host service. ")
+                    session.rollback()
             else:
                 debug.msg("port and/or addr missing.")
             
@@ -355,7 +357,7 @@ def store_nmap_service_script(scripts, host_service_record):
 
                 except Exception as e:
                     print "[*] Error adding service script. "
-                    print e
+                    debug.msg(e)
             else:
                 print "Required parameters for store_nmap_service_script not found. "
 
@@ -520,25 +522,46 @@ def query_exploits(host_service_extended):
     if debug.level > 0:
         debug.msg(host_service_extended)
     
-    service_exploits = []
+    service_exploits_all = []
+    service_aliases = []
     exploit_parameters = []
     session = Session(bind = engine)
     session.add(host_service_extended)
     os_family = host_service_extended.os_family
     service_name = host_service_extended.service_name
+    #os_family = "Windows"
+    #service_name = "smb"
     ip = host_service_extended.ip
     port_id = host_service_extended.port_id
 
     try:
-        service_exploits = session.query(Service_exploit).filter(and_(Service_exploit.os_family.match(os_family), 
-                Service_exploit.service_name.match(service_name))).all()
-        if len(service_exploits) > 0:
-            exploit_parameters = session.query(Exploit_parameter).filter(Exploit_parameter.exploit_sha1.match(service_exploits[0].exploit_sha1)).all()
-            print exploit_parameters
+        #print "os_family: " + os_family + "\n service_name: " + service_name
+        """ This next few lines will find the service used by nmap, map it to a service,
+            then use the nmap name as the service.  This is to allow for aliases.  There
+            is a more efficient way, but I don't have the time to work on that right now.
+        """
+        nmap_aliases = session.query(Nmap_service_alias.service_alias).filter(Nmap_service_alias.nmap_service == service_name)
+        #print nmap_aliases.all()
+        service_names = session.query(Service_exploit.service_name).filter(Service_exploit.service_name == service_name)
+        nmap_set = set(nmap_aliases)
+        service_set = set(service_names)
+        #services = OrderedSet(nmap_aliases.union(service_names))
+        services = nmap_set | service_set 
+        #print services
+        """ This loops through the services and finds the associated exploits. """
+        for service in services:
+            if service[0] is not None:
+                exploit_paths = session.query(Service_exploit.exploit_path).join(Exploit).filter(and_(Service_exploit.os_family == os_family, Service_exploit.service_name == str(service[0]))).all()
+                for exploit_paths in exploit_paths:
+                    service_exploits_all.append(str(exploit_paths[0]))
+            #if len(service_exploits_all) > 0:
+            #    exploit_parameters = session.query(Exploit_parameter).filter(Exploit_parameter.exploit_sha1.match(service_exploits[0].exploit_sha1)).all()
+            #    print exploit_parameters
     except Exception as e:
         debug.msg(e)
 
-    return service_exploits
+    #print set(service_exploits_all)
+    return service_exploits_all
 
 def update_exploits():
     if debug.level > 0:
@@ -660,16 +683,21 @@ def main():
                 if len(host_services_extended) > 0:
                     pool = multiprocessing.Pool(processes = processCount)
                     service_exploits = pool.map_async(query_exploits, host_services_extended).get(99999999999)
-                
-                    if len(service_exploits) > 0:
-                        print "[*] Exploits found:"
-                        for service_exploit in service_exploits:
-                            for service_exploit in service_exploit:
-                                session_exploits.add(service_exploit)
-                                print service_exploit.exploit_path
- 
-                else:
-                    print "Sorry, no exploits found.  :("
+                    
+                    """ This is used to clean up the data.  I need a unique list of data without blank sets """
+                    service_exploits_set = set()
+                    for service_exploit_list in service_exploits:
+                        service_exploits_set = service_exploits_set | set(service_exploit_list)
+                    
+                    if len(service_exploits_set) > 0:
+                        
+                        print "[*] %d exploits found:" % len(service_exploits_set)
+                        for service_exploit in service_exploits_set:
+                            found_exploits.append(service_exploit)
+                            print service_exploit
+                    
+                    else:
+                        print "Sorry, no exploits found.  :("
 
         except ProgrammingError as e:
             debug.msg(e)

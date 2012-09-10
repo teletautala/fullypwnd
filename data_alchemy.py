@@ -114,7 +114,7 @@ class Exploit(Base):
     exploit_githash = deferred(Column(String(41), default = None))
     source_file = deferred(Column(String(100)))
     preliminary_function = deferred(Column(String(25)))
-                                                                
+
     service_exploit = relationship("Service_exploit", cascade = "all, delete, delete-orphan",
             backref = "Exploit")
     exploit_parameter = relationship("Exploit_parameter", cascade = "all, delete, delete-orphan",
@@ -134,7 +134,7 @@ class Service_exploit(Base):
     exploit_sha1 = Column(Integer, ForeignKey("exploit.exploit_sha1"))
     service_name = Column(String(100), ForeignKey("host_service.service_name"))
     exploit_source = deferred(Column(String(50), default = None))
-    exploit_path = deferred(Column(String(), default = None))
+    exploit_path = deferred(Column(String(1000), default = None))
     preliminary_function = deferred(Column(String(100), default = None))
     os_vendor = deferred(Column(String(100), default = None))
     os_type = deferred(Column(String(100), default = None))
@@ -142,8 +142,16 @@ class Service_exploit(Base):
     os_gen = deferred(Column(String(100), default = None))
     product = deferred(Column(String(50), default = None))
     version = deferred(Column(String(50), default = None))
-    attempts = deferred(Column(Integer, default = None))
-    successes = deferred(Column(Integer, default = None))
-    exploit_log = deferred(Column(String(), default = None))
+    #attempts = deferred(Column(Integer, default = None))
+    #successes = deferred(Column(Integer, default = None))
+    #exploit_log = deferred(Column(String(), default = None))
     date_modified = deferred(Column(DateTime, default = datetime.datetime.now()))
+
+class Nmap_service_alias(Base):
+    __tablename__ = 'nmap_service_alias'
+
+    id = Column(Integer, primary_key = True, autoincrement = True)
+    nmap_service = Column(String(100))
+    service_alias = Column(String(100))
+    date_modified = Column(DateTime, default = datetime.datetime.now())
 
