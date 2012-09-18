@@ -2,69 +2,37 @@
 -- PostgreSQL database dump
 --
 
--- Started on 2012-09-10 15:55:32 MDT
+-- Dumped from database version 9.1.5
+-- Dumped by pg_dump version 9.1.5
+-- Started on 2012-09-17 21:50:24 MDT
 
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
-SET standard_conforming_strings = off;
+SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
-SET escape_string_warning = off;
 
-SET search_path = public, pg_catalog;
-
-ALTER TABLE ONLY public.host_service DROP CONSTRAINT fk_host_ip;
-ALTER TABLE ONLY public.service_exploit DROP CONSTRAINT fk_exploit_sha1;
-ALTER TABLE ONLY public.exploit_parameter DROP CONSTRAINT fk_exploit_sha1;
-ALTER TABLE ONLY public.service_exploit DROP CONSTRAINT uniq_working_exploit;
-ALTER TABLE ONLY public.service DROP CONSTRAINT uniq_service;
-ALTER TABLE ONLY public.host DROP CONSTRAINT uniq_ip;
-ALTER TABLE ONLY public.host_service DROP CONSTRAINT uniq_host_service;
-ALTER TABLE ONLY public.service_exploit DROP CONSTRAINT pk_working_exploit_id;
-ALTER TABLE ONLY public.service_script DROP CONSTRAINT pk_service_script;
-ALTER TABLE ONLY public.service DROP CONSTRAINT pk_service_id;
-ALTER TABLE ONLY public.scan DROP CONSTRAINT pk_scan;
-ALTER TABLE ONLY public.product DROP CONSTRAINT pk_product;
-ALTER TABLE ONLY public.os_signature DROP CONSTRAINT pk_os_signature;
-ALTER TABLE ONLY public.nmap_service_alias DROP CONSTRAINT pk_nmap_service_alias;
-ALTER TABLE ONLY public.host_service DROP CONSTRAINT pk_host_service_id;
-ALTER TABLE ONLY public.host DROP CONSTRAINT pk_host_id;
-ALTER TABLE ONLY public.exploit_parameter DROP CONSTRAINT pk_exploit_parameter;
-ALTER TABLE ONLY public.exploit DROP CONSTRAINT pk_exploit;
-ALTER TABLE public.service_script ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.service_exploit ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.service ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.scan ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.product ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.os_signature ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.nmap_service_alias ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.host_service ALTER COLUMN id DROP DEFAULT;
-ALTER TABLE public.host ALTER COLUMN id DROP DEFAULT;
-DROP SEQUENCE public.working_exploit_id_seq;
-DROP SEQUENCE public.service_script_id_seq;
-DROP TABLE public.service_script;
-DROP SEQUENCE public.service_id_seq;
-DROP TABLE public.service_exploit;
-DROP TABLE public.service;
-DROP SEQUENCE public.scan_id_seq;
-DROP TABLE public.scan;
-DROP SEQUENCE public.product_id_seq;
-DROP TABLE public.product;
-DROP SEQUENCE public.os_signature_id_seq;
-DROP TABLE public.os_signature;
-DROP SEQUENCE public.nmap_service_alias_id_seq;
-DROP TABLE public.nmap_service_alias;
-DROP SEQUENCE public.host_service_id_seq;
-DROP VIEW public.host_service_extended;
-DROP TABLE public.host_service;
-DROP SEQUENCE public.host_id_seq;
-DROP TABLE public.host;
-DROP TABLE public.exploit_parameter;
-DROP TABLE public.exploit;
-DROP SCHEMA public;
 --
--- TOC entry 1885 (class 1262 OID 11564)
--- Dependencies: 1884
+-- TOC entry 2010 (class 1262 OID 11951)
+-- Name: postgres; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
+
+
+ALTER DATABASE postgres OWNER TO postgres;
+
+\connect postgres
+
+SET statement_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 2011 (class 1262 OID 11951)
+-- Dependencies: 2010
 -- Name: postgres; Type: COMMENT; Schema: -; Owner: postgres
 --
 
@@ -72,22 +40,20 @@ COMMENT ON DATABASE postgres IS 'default administrative connection database';
 
 
 --
--- TOC entry 5 (class 2615 OID 24839)
--- Name: public; Type: SCHEMA; Schema: -; Owner: postgres
+-- TOC entry 184 (class 3079 OID 11677)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
-CREATE SCHEMA public;
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
-
-ALTER SCHEMA public OWNER TO postgres;
 
 --
--- TOC entry 1886 (class 0 OID 0)
--- Dependencies: 5
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
+-- TOC entry 2014 (class 0 OID 0)
+-- Dependencies: 184
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
-COMMENT ON SCHEMA public IS 'standard public schema';
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 SET search_path = public, pg_catalog;
@@ -97,8 +63,8 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 153 (class 1259 OID 25007)
--- Dependencies: 5
+-- TOC entry 161 (class 1259 OID 18419)
+-- Dependencies: 6
 -- Name: exploit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -113,8 +79,8 @@ CREATE TABLE exploit (
 ALTER TABLE public.exploit OWNER TO postgres;
 
 --
--- TOC entry 152 (class 1259 OID 24969)
--- Dependencies: 5
+-- TOC entry 162 (class 1259 OID 18422)
+-- Dependencies: 6
 -- Name: exploit_parameter; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -129,8 +95,8 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.exploit_parameter OWNER TO postgres;
 
 --
--- TOC entry 140 (class 1259 OID 24848)
--- Dependencies: 5
+-- TOC entry 163 (class 1259 OID 18425)
+-- Dependencies: 6
 -- Name: host; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -160,24 +126,24 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.host OWNER TO postgres;
 
 --
--- TOC entry 141 (class 1259 OID 24854)
--- Dependencies: 5 140
+-- TOC entry 164 (class 1259 OID 18431)
+-- Dependencies: 6 163
 -- Name: host_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE host_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.host_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1888 (class 0 OID 0)
--- Dependencies: 141
+-- TOC entry 2015 (class 0 OID 0)
+-- Dependencies: 164
 -- Name: host_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -185,8 +151,8 @@ ALTER SEQUENCE host_id_seq OWNED BY host.id;
 
 
 --
--- TOC entry 142 (class 1259 OID 24856)
--- Dependencies: 5
+-- TOC entry 165 (class 1259 OID 18433)
+-- Dependencies: 6
 -- Name: host_service; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -213,8 +179,8 @@ WITH (autovacuum_enabled=true, toast.autovacuum_enabled=true);
 ALTER TABLE public.host_service OWNER TO postgres;
 
 --
--- TOC entry 154 (class 1259 OID 25100)
--- Dependencies: 1646 5
+-- TOC entry 166 (class 1259 OID 18439)
+-- Dependencies: 1956 6
 -- Name: host_service_extended; Type: VIEW; Schema: public; Owner: postgres
 --
 
@@ -225,24 +191,24 @@ CREATE VIEW host_service_extended AS
 ALTER TABLE public.host_service_extended OWNER TO postgres;
 
 --
--- TOC entry 143 (class 1259 OID 24867)
--- Dependencies: 142 5
+-- TOC entry 167 (class 1259 OID 18444)
+-- Dependencies: 6 165
 -- Name: host_service_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE host_service_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.host_service_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1889 (class 0 OID 0)
--- Dependencies: 143
+-- TOC entry 2016 (class 0 OID 0)
+-- Dependencies: 167
 -- Name: host_service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -250,8 +216,8 @@ ALTER SEQUENCE host_service_id_seq OWNED BY host_service.id;
 
 
 --
--- TOC entry 156 (class 1259 OID 25107)
--- Dependencies: 5
+-- TOC entry 168 (class 1259 OID 18446)
+-- Dependencies: 6
 -- Name: nmap_service_alias; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -266,24 +232,24 @@ CREATE TABLE nmap_service_alias (
 ALTER TABLE public.nmap_service_alias OWNER TO postgres;
 
 --
--- TOC entry 155 (class 1259 OID 25105)
--- Dependencies: 5 156
+-- TOC entry 169 (class 1259 OID 18449)
+-- Dependencies: 6 168
 -- Name: nmap_service_alias_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE nmap_service_alias_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.nmap_service_alias_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1890 (class 0 OID 0)
--- Dependencies: 155
+-- TOC entry 2017 (class 0 OID 0)
+-- Dependencies: 169
 -- Name: nmap_service_alias_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -291,8 +257,8 @@ ALTER SEQUENCE nmap_service_alias_id_seq OWNED BY nmap_service_alias.id;
 
 
 --
--- TOC entry 144 (class 1259 OID 24869)
--- Dependencies: 5
+-- TOC entry 170 (class 1259 OID 18451)
+-- Dependencies: 6
 -- Name: os_signature; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -312,24 +278,24 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.os_signature OWNER TO postgres;
 
 --
--- TOC entry 145 (class 1259 OID 24875)
--- Dependencies: 5 144
+-- TOC entry 171 (class 1259 OID 18457)
+-- Dependencies: 6 170
 -- Name: os_signature_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE os_signature_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.os_signature_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1891 (class 0 OID 0)
--- Dependencies: 145
+-- TOC entry 2018 (class 0 OID 0)
+-- Dependencies: 171
 -- Name: os_signature_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -337,8 +303,8 @@ ALTER SEQUENCE os_signature_id_seq OWNED BY os_signature.id;
 
 
 --
--- TOC entry 158 (class 1259 OID 25117)
--- Dependencies: 1847 5
+-- TOC entry 172 (class 1259 OID 18459)
+-- Dependencies: 1961 6
 -- Name: product; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -352,7 +318,6 @@ CREATE TABLE product (
     default_admin_username character varying(50),
     default_admin_password character varying,
     password_constraints text,
-    ostype character varying(100),
     service_name character varying(100),
     extrainfo character varying(200)
 );
@@ -361,24 +326,64 @@ CREATE TABLE product (
 ALTER TABLE public.product OWNER TO postgres;
 
 --
--- TOC entry 157 (class 1259 OID 25115)
--- Dependencies: 5 158
+-- TOC entry 183 (class 1259 OID 19716)
+-- Dependencies: 6
+-- Name: product_exploit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE product_exploit (
+    id bigint NOT NULL,
+    exploit_sha1 character(41),
+    product_id bigint
+);
+
+
+ALTER TABLE public.product_exploit OWNER TO postgres;
+
+--
+-- TOC entry 182 (class 1259 OID 19714)
+-- Dependencies: 183 6
+-- Name: product_exploit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE product_exploit_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.product_exploit_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2019 (class 0 OID 0)
+-- Dependencies: 182
+-- Name: product_exploit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE product_exploit_id_seq OWNED BY product_exploit.id;
+
+
+--
+-- TOC entry 173 (class 1259 OID 18466)
+-- Dependencies: 172 6
 -- Name: product_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE product_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.product_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1892 (class 0 OID 0)
--- Dependencies: 157
+-- TOC entry 2020 (class 0 OID 0)
+-- Dependencies: 173
 -- Name: product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -386,8 +391,8 @@ ALTER SEQUENCE product_id_seq OWNED BY product.id;
 
 
 --
--- TOC entry 159 (class 1259 OID 25134)
--- Dependencies: 5
+-- TOC entry 174 (class 1259 OID 18468)
+-- Dependencies: 6
 -- Name: scan; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -408,24 +413,24 @@ CREATE TABLE scan (
 ALTER TABLE public.scan OWNER TO postgres;
 
 --
--- TOC entry 160 (class 1259 OID 25137)
--- Dependencies: 159 5
+-- TOC entry 175 (class 1259 OID 18471)
+-- Dependencies: 6 174
 -- Name: scan_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE scan_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.scan_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1893 (class 0 OID 0)
--- Dependencies: 160
+-- TOC entry 2021 (class 0 OID 0)
+-- Dependencies: 175
 -- Name: scan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -433,8 +438,8 @@ ALTER SEQUENCE scan_id_seq OWNED BY scan.id;
 
 
 --
--- TOC entry 146 (class 1259 OID 24877)
--- Dependencies: 5
+-- TOC entry 176 (class 1259 OID 18473)
+-- Dependencies: 6
 -- Name: service; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -456,8 +461,8 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.service OWNER TO postgres;
 
 --
--- TOC entry 150 (class 1259 OID 24890)
--- Dependencies: 1844 5
+-- TOC entry 177 (class 1259 OID 18476)
+-- Dependencies: 1965 6
 -- Name: service_exploit; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -482,24 +487,24 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.service_exploit OWNER TO postgres;
 
 --
--- TOC entry 147 (class 1259 OID 24880)
--- Dependencies: 146 5
+-- TOC entry 178 (class 1259 OID 18483)
+-- Dependencies: 176 6
 -- Name: service_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE service_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.service_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1894 (class 0 OID 0)
--- Dependencies: 147
+-- TOC entry 2022 (class 0 OID 0)
+-- Dependencies: 178
 -- Name: service_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -507,8 +512,8 @@ ALTER SEQUENCE service_id_seq OWNED BY service.id;
 
 
 --
--- TOC entry 148 (class 1259 OID 24882)
--- Dependencies: 5
+-- TOC entry 179 (class 1259 OID 18485)
+-- Dependencies: 6
 -- Name: service_script; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -528,24 +533,24 @@ WITH (autovacuum_enabled=true);
 ALTER TABLE public.service_script OWNER TO postgres;
 
 --
--- TOC entry 149 (class 1259 OID 24888)
--- Dependencies: 5 148
+-- TOC entry 180 (class 1259 OID 18491)
+-- Dependencies: 6 179
 -- Name: service_script_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE service_script_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.service_script_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1895 (class 0 OID 0)
--- Dependencies: 149
+-- TOC entry 2023 (class 0 OID 0)
+-- Dependencies: 180
 -- Name: service_script_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -553,24 +558,24 @@ ALTER SEQUENCE service_script_id_seq OWNED BY service_script.id;
 
 
 --
--- TOC entry 151 (class 1259 OID 24898)
--- Dependencies: 150 5
+-- TOC entry 181 (class 1259 OID 18493)
+-- Dependencies: 177 6
 -- Name: working_exploit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
 CREATE SEQUENCE working_exploit_id_seq
     START WITH 1
     INCREMENT BY 1
-    NO MAXVALUE
     NO MINVALUE
+    NO MAXVALUE
     CACHE 1;
 
 
 ALTER TABLE public.working_exploit_id_seq OWNER TO postgres;
 
 --
--- TOC entry 1896 (class 0 OID 0)
--- Dependencies: 151
+-- TOC entry 2024 (class 0 OID 0)
+-- Dependencies: 181
 -- Name: working_exploit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -578,8 +583,8 @@ ALTER SEQUENCE working_exploit_id_seq OWNED BY service_exploit.id;
 
 
 --
--- TOC entry 1838 (class 2604 OID 24901)
--- Dependencies: 141 140
+-- TOC entry 1957 (class 2604 OID 18495)
+-- Dependencies: 164 163
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -587,8 +592,8 @@ ALTER TABLE ONLY host ALTER COLUMN id SET DEFAULT nextval('host_id_seq'::regclas
 
 
 --
--- TOC entry 1839 (class 2604 OID 24902)
--- Dependencies: 143 142
+-- TOC entry 1958 (class 2604 OID 18496)
+-- Dependencies: 167 165
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -596,8 +601,8 @@ ALTER TABLE ONLY host_service ALTER COLUMN id SET DEFAULT nextval('host_service_
 
 
 --
--- TOC entry 1845 (class 2604 OID 25110)
--- Dependencies: 155 156 156
+-- TOC entry 1959 (class 2604 OID 18497)
+-- Dependencies: 169 168
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -605,8 +610,8 @@ ALTER TABLE ONLY nmap_service_alias ALTER COLUMN id SET DEFAULT nextval('nmap_se
 
 
 --
--- TOC entry 1840 (class 2604 OID 24903)
--- Dependencies: 145 144
+-- TOC entry 1960 (class 2604 OID 18498)
+-- Dependencies: 171 170
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -614,8 +619,8 @@ ALTER TABLE ONLY os_signature ALTER COLUMN id SET DEFAULT nextval('os_signature_
 
 
 --
--- TOC entry 1846 (class 2604 OID 25120)
--- Dependencies: 157 158 158
+-- TOC entry 1962 (class 2604 OID 18499)
+-- Dependencies: 173 172
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -623,8 +628,17 @@ ALTER TABLE ONLY product ALTER COLUMN id SET DEFAULT nextval('product_id_seq'::r
 
 
 --
--- TOC entry 1848 (class 2604 OID 25139)
--- Dependencies: 160 159
+-- TOC entry 1968 (class 2604 OID 19719)
+-- Dependencies: 182 183 183
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY product_exploit ALTER COLUMN id SET DEFAULT nextval('product_exploit_id_seq'::regclass);
+
+
+--
+-- TOC entry 1963 (class 2604 OID 18500)
+-- Dependencies: 175 174
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -632,8 +646,8 @@ ALTER TABLE ONLY scan ALTER COLUMN id SET DEFAULT nextval('scan_id_seq'::regclas
 
 
 --
--- TOC entry 1841 (class 2604 OID 24904)
--- Dependencies: 147 146
+-- TOC entry 1964 (class 2604 OID 18501)
+-- Dependencies: 178 176
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -641,8 +655,8 @@ ALTER TABLE ONLY service ALTER COLUMN id SET DEFAULT nextval('service_id_seq'::r
 
 
 --
--- TOC entry 1843 (class 2604 OID 24906)
--- Dependencies: 151 150
+-- TOC entry 1966 (class 2604 OID 18502)
+-- Dependencies: 181 177
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -650,8 +664,8 @@ ALTER TABLE ONLY service_exploit ALTER COLUMN id SET DEFAULT nextval('working_ex
 
 
 --
--- TOC entry 1842 (class 2604 OID 24905)
--- Dependencies: 149 148
+-- TOC entry 1967 (class 2604 OID 18503)
+-- Dependencies: 180 179
 -- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -659,8 +673,8 @@ ALTER TABLE ONLY service_script ALTER COLUMN id SET DEFAULT nextval('service_scr
 
 
 --
--- TOC entry 1872 (class 2606 OID 25011)
--- Dependencies: 153 153
+-- TOC entry 1970 (class 2606 OID 18505)
+-- Dependencies: 161 161 2007
 -- Name: pk_exploit; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -669,8 +683,8 @@ ALTER TABLE ONLY exploit
 
 
 --
--- TOC entry 1870 (class 2606 OID 25004)
--- Dependencies: 152 152 152 152
+-- TOC entry 1972 (class 2606 OID 18507)
+-- Dependencies: 162 162 162 162 2007
 -- Name: pk_exploit_parameter; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -679,8 +693,8 @@ ALTER TABLE ONLY exploit_parameter
 
 
 --
--- TOC entry 1850 (class 2606 OID 24910)
--- Dependencies: 140 140
+-- TOC entry 1974 (class 2606 OID 18509)
+-- Dependencies: 163 163 2007
 -- Name: pk_host_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -689,8 +703,8 @@ ALTER TABLE ONLY host
 
 
 --
--- TOC entry 1854 (class 2606 OID 24912)
--- Dependencies: 142 142
+-- TOC entry 1978 (class 2606 OID 18511)
+-- Dependencies: 165 165 2007
 -- Name: pk_host_service_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -699,8 +713,8 @@ ALTER TABLE ONLY host_service
 
 
 --
--- TOC entry 1874 (class 2606 OID 25112)
--- Dependencies: 156 156
+-- TOC entry 1982 (class 2606 OID 18513)
+-- Dependencies: 168 168 2007
 -- Name: pk_nmap_service_alias; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -709,8 +723,8 @@ ALTER TABLE ONLY nmap_service_alias
 
 
 --
--- TOC entry 1858 (class 2606 OID 24914)
--- Dependencies: 144 144
+-- TOC entry 1984 (class 2606 OID 18515)
+-- Dependencies: 170 170 2007
 -- Name: pk_os_signature; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -719,8 +733,8 @@ ALTER TABLE ONLY os_signature
 
 
 --
--- TOC entry 1876 (class 2606 OID 25125)
--- Dependencies: 158 158
+-- TOC entry 1986 (class 2606 OID 18517)
+-- Dependencies: 172 172 2007
 -- Name: pk_product; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -729,8 +743,18 @@ ALTER TABLE ONLY product
 
 
 --
--- TOC entry 1878 (class 2606 OID 25144)
--- Dependencies: 159 159
+-- TOC entry 2000 (class 2606 OID 19721)
+-- Dependencies: 183 183 2007
+-- Name: pk_product_exploit; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY product_exploit
+    ADD CONSTRAINT pk_product_exploit PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1988 (class 2606 OID 18519)
+-- Dependencies: 174 174 2007
 -- Name: pk_scan; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -739,8 +763,8 @@ ALTER TABLE ONLY scan
 
 
 --
--- TOC entry 1860 (class 2606 OID 24916)
--- Dependencies: 146 146
+-- TOC entry 1990 (class 2606 OID 18521)
+-- Dependencies: 176 176 2007
 -- Name: pk_service_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -749,8 +773,8 @@ ALTER TABLE ONLY service
 
 
 --
--- TOC entry 1864 (class 2606 OID 24918)
--- Dependencies: 148 148
+-- TOC entry 1998 (class 2606 OID 18523)
+-- Dependencies: 179 179 2007
 -- Name: pk_service_script; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -759,8 +783,8 @@ ALTER TABLE ONLY service_script
 
 
 --
--- TOC entry 1866 (class 2606 OID 24920)
--- Dependencies: 150 150
+-- TOC entry 1994 (class 2606 OID 18525)
+-- Dependencies: 177 177 2007
 -- Name: pk_working_exploit_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -769,8 +793,8 @@ ALTER TABLE ONLY service_exploit
 
 
 --
--- TOC entry 1856 (class 2606 OID 24924)
--- Dependencies: 142 142 142 142
+-- TOC entry 1980 (class 2606 OID 18527)
+-- Dependencies: 165 165 165 165 2007
 -- Name: uniq_host_service; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -779,8 +803,8 @@ ALTER TABLE ONLY host_service
 
 
 --
--- TOC entry 1852 (class 2606 OID 24926)
--- Dependencies: 140 140
+-- TOC entry 1976 (class 2606 OID 18529)
+-- Dependencies: 163 163 2007
 -- Name: uniq_ip; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -789,8 +813,8 @@ ALTER TABLE ONLY host
 
 
 --
--- TOC entry 1862 (class 2606 OID 24928)
--- Dependencies: 146 146
+-- TOC entry 1992 (class 2606 OID 18531)
+-- Dependencies: 176 176 2007
 -- Name: uniq_service; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -799,8 +823,8 @@ ALTER TABLE ONLY service
 
 
 --
--- TOC entry 1868 (class 2606 OID 25061)
--- Dependencies: 150 150 150
+-- TOC entry 1996 (class 2606 OID 18533)
+-- Dependencies: 177 177 177 2007
 -- Name: uniq_working_exploit; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
 --
 
@@ -809,8 +833,18 @@ ALTER TABLE ONLY service_exploit
 
 
 --
--- TOC entry 1881 (class 2606 OID 25012)
--- Dependencies: 1871 153 152
+-- TOC entry 2004 (class 2606 OID 19722)
+-- Dependencies: 183 161 1969 2007
+-- Name: fk_exploit; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY product_exploit
+    ADD CONSTRAINT fk_exploit FOREIGN KEY (exploit_sha1) REFERENCES exploit(exploit_sha1);
+
+
+--
+-- TOC entry 2001 (class 2606 OID 18534)
+-- Dependencies: 1969 161 162 2007
 -- Name: fk_exploit_sha1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -819,8 +853,8 @@ ALTER TABLE ONLY exploit_parameter
 
 
 --
--- TOC entry 1880 (class 2606 OID 25069)
--- Dependencies: 150 1871 153
+-- TOC entry 2003 (class 2606 OID 18539)
+-- Dependencies: 1969 177 161 2007
 -- Name: fk_exploit_sha1; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -829,8 +863,8 @@ ALTER TABLE ONLY service_exploit
 
 
 --
--- TOC entry 1879 (class 2606 OID 24935)
--- Dependencies: 140 1851 142
+-- TOC entry 2002 (class 2606 OID 18544)
+-- Dependencies: 163 165 1975 2007
 -- Name: fk_host_ip; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -839,8 +873,18 @@ ALTER TABLE ONLY host_service
 
 
 --
--- TOC entry 1887 (class 0 OID 0)
--- Dependencies: 5
+-- TOC entry 2005 (class 2606 OID 19727)
+-- Dependencies: 172 183 1985 2007
+-- Name: fk_product; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY product_exploit
+    ADD CONSTRAINT fk_product FOREIGN KEY (product_id) REFERENCES product(id);
+
+
+--
+-- TOC entry 2013 (class 0 OID 0)
+-- Dependencies: 6
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
 
@@ -850,7 +894,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2012-09-10 15:55:33 MDT
+-- Completed on 2012-09-17 21:50:24 MDT
 
 --
 -- PostgreSQL database dump complete
