@@ -8,7 +8,6 @@ import re
 import getopt
 import csv
 import migrate_exploits
-from OrderedSet import OrderedSet
 from data_alchemy import *
 from sqlalchemy import *
 from sqlalchemy.orm import Session
@@ -264,7 +263,7 @@ def store_nmap_host_services(services, host_record):
             if 'reason_ttl' in service:
                 reason_ttl = service['reason_ttl']
             else:
-                reason_ttl = ""
+                reason_ttl = 0
             if 'service_name' in service:
                 service_name = service['service_name']
             else:
@@ -292,9 +291,9 @@ def store_nmap_host_services(services, host_record):
             if 'conf' in service:
                 conf = service['conf']
             else:
-                conf = ""
+                conf = 0
 
-            if port_id != None and addr != None:
+            if port_id != None and port_id != "" and addr != None:
                 port_id = int(port_id)
                 reason_ttl = int(reason_ttl)
                 conf = int(conf)
@@ -366,18 +365,24 @@ def store_nmap_service_script(scripts, host_service_record):
 def parse_nmap_xml(nmap_xml):
     if debug.level > 0:
         debug.msg(nmap_xml)
+        for node in nmap_xml:
+            for subnode in node:
+                print node
+                print "  ", subnode
+
 
     nmap_host = {}
     host_services = []
     hostscript_tmp = {}
     hostscripts = []
+    port_script = []
     host = nmap_xml.find('host')
     if host != None:
         host_status = host.find('status')
         if host_status != None:
             nmap_host['state'] = host_status.get('state')
             nmap_host['reason'] = host_status.get('reason')
-
+            
         host_address = host.find('address')
         if host_address != None:
             nmap_host['addr'] = host_address.get('addr')
@@ -418,14 +423,13 @@ def parse_nmap_xml(nmap_xml):
         if finished != None:
             nmap_host['finished'] = finished.get('timestr')
             nmap_host['elapsed'] = finished.get('elapsed')
-
+        
         hostscripts = host.find('hostscript')
         if hostscripts != None:
             for hostscript in hostscripts:
                 hostscript_tmp['hostscript_id'] = hostscript.get('id')
-
+        
         port_nodes = host.findall('ports/port')
-        port_script = []
         if port_nodes != None:
             for port in port_nodes:
                 port_tmp = {}
@@ -439,16 +443,18 @@ def parse_nmap_xml(nmap_xml):
                 port_tmp['state'] = port.find('state').get('state')
                 port_tmp['reason'] = port.find('state').get('reason')
                 port_tmp['reason_ttl'] = port.find('state').get('reason_ttl')
-    
+                
                 # service information
-                port_tmp['service_name'] = port.find('service').get('name')
-                port_tmp['product'] = port.find('service').get('product')
-                port_tmp['version'] = port.find('service').get('version')
-                port_tmp['extrainfo'] = port.find('service').get('extrainfo')
-                port_tmp['ostype'] = port.find('service').get('ostype')
-                port_tmp['method'] = port.find('service').get('method')
-                port_tmp['conf'] = port.find('service').get('conf')
-    
+                service = port.find('service')
+                if service != None:
+                    port_tmp['service_name'] = service.get('name')
+                    port_tmp['product'] = service.get('product')
+                    port_tmp['version'] = service.get('version')
+                    port_tmp['extrainfo'] = service.get('extrainfo')
+                    port_tmp['ostype'] = service.get('ostype')
+                    port_tmp['method'] = service.get('method')
+                    port_tmp['conf'] = service.get('conf')
+                
                 # script information
                 script_nodes = port.findall('script')
 
@@ -466,7 +472,7 @@ def parse_nmap_xml(nmap_xml):
                 
                 port_tmp['scripts'] = port_script
                 host_services.append(port_tmp)
-        
+                     
         return nmap_host, host_services, port_script
 
 # TODO This could pass command line arguments to nmap
@@ -614,6 +620,7 @@ def main():
         debug.msg()
 
     processCount = multiprocessing.cpu_count()
+    print sys.argv[1:]
     flags, other = getopt.getopt(sys.argv[1:], options, longOptions)
     run_scan = True
     find_exploits = True
